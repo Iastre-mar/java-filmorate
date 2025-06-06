@@ -14,7 +14,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/films")
-
 public class FilmController {
     private final FilmService filmService;
 

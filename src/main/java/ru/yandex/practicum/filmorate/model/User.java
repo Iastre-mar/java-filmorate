@@ -13,7 +13,10 @@ public class User {
     private int id;
     @NotBlank @Email private String email;
     @NotBlank @Pattern(regexp = "\\S+") private String login;
-    @NotNull
     private String name;
     @PastOrPresent private LocalDate birthday;
+
+    public String getName(){
+        return name == null ? login : name;
+    }
 }
