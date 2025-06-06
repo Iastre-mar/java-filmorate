@@ -19,7 +19,7 @@ public class DurationSerializer extends JsonSerializer<Duration> {
         if (duration == null) {
             gen.writeNull();
         } else {
-            gen.writeString(duration.toString());
+            gen.writeNumber(duration.toMinutes());
         }
     }
 }
