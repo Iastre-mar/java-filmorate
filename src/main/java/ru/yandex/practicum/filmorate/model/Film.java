@@ -25,6 +25,8 @@ import java.util.Set;
 @Data
 public class Film {
     public static final String START_OF_EPOCH = "1895-12-28";
+    @Setter(AccessLevel.NONE) @EqualsAndHashCode.Exclude
+    private final Set<Long> setUserIdsLikedThis = new HashSet<>();
     private long id;
     @NotBlank private String name;
     @Size(max = 200) private String description;
@@ -32,8 +34,4 @@ public class Film {
     @NotNull @JsonSerialize(using = DurationSerializer.class)
     @JsonDeserialize(using = DurationDeserializer.class) @PositiveDuration
     private Duration duration;
-
-    @Setter(AccessLevel.NONE)
-    @EqualsAndHashCode.Exclude
-    private final Set<Long> setUserIdsLikedThis = new HashSet<>();
 }

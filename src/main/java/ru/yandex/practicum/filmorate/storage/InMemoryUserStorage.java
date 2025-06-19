@@ -43,8 +43,10 @@ public class InMemoryUserStorage implements UserStorage {
         return id++;
     }
 
-    private Set<User> getSetOfFriends(User user){
-        return user.getFriendsIdSet().stream().map(
-                users::get).collect(Collectors.toSet());
+    private Set<User> getSetOfFriends(User user) {
+        return user.getFriendsIdSet()
+                   .stream()
+                   .map(users::get)
+                   .collect(Collectors.toSet());
     }
 }
