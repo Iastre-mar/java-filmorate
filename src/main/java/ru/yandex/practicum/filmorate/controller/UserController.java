@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -28,9 +26,38 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        return userService.update(user)
-                          .orElseThrow(() -> new ResponseStatusException(
-                                  HttpStatus.NOT_FOUND));
+        return userService.updateUser(user)
+                          .get();
     }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.getUser(id)
+                          .get();
+    }
+
+
+    @GetMapping("{id}/friends")
+    public Collection<User> getFriends(@PathVariable Long id) {
+        return userService.getFriends(id);
+    }
+
+    @PutMapping("{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriends(@PathVariable Long id,
+                                             @PathVariable Long otherId
+    ) {
+        return userService.getCommonFriends(id, otherId);
+    }
+
+    @DeleteMapping("{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId){
+        userService.removeFriend(id, friendId);
+    }
+
 
 }

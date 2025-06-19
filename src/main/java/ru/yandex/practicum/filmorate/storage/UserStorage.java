@@ -10,7 +10,9 @@ public interface UserStorage {
 
     Optional<User> update(User user);
 
-    User delete(User user);
-
     Collection<User> getAll();
+
+    Optional<User> get(Long id);
+
+    Collection<User> getFriends(Long id);
 }

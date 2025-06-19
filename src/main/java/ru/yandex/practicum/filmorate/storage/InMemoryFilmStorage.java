@@ -10,8 +10,8 @@ import java.util.Optional;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int id = 1;
+    private final Map<Long, Film> films = new HashMap<>();
+    private long id = 1;
 
     @Override
     public Collection<Film> getAll() {
@@ -31,12 +31,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 films.computeIfPresent(film.getId(), (k, v) -> film));
     }
 
-    @Override
-    public Film delete(Film film) {
-        return null;
-    }
-
-    private int generateId() {
+    private long generateId() {
         return id++;
     }
 }

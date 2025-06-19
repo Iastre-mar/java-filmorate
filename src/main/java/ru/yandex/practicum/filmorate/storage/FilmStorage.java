@@ -10,7 +10,5 @@ public interface FilmStorage {
 
     Optional<Film> update(Film film);
 
-    Film delete(Film film);
-
     Collection<Film> getAll();
 }

@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Data
 public class Film {
     public static final String START_OF_EPOCH = "1895-12-28";
-    private int id;
+    private long id;
     @NotBlank private String name;
     @Size(max = 200) private String description;
     @AfterDate(START_OF_EPOCH) private LocalDate releaseDate;
