@@ -38,7 +38,8 @@ public class UserService {
 
     @LogMethodResult
     public Collection<User> getFriends(Long id) {
-        userStorage.get(id).get(); // check if user exists
+        userStorage.get(id)
+                   .get(); // check if user exists
         return userStorage.getFriends(id);
     }
 
