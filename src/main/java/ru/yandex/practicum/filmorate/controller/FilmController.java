@@ -29,9 +29,7 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        return filmService.update(film)
-                          .orElseThrow(() -> new ResponseStatusException(
-                                  HttpStatus.NOT_FOUND));
+        return filmService.update(film).get();
     }
 
     @PutMapping("{id}/like/{userId}")

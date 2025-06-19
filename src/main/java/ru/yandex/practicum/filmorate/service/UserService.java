@@ -38,6 +38,7 @@ public class UserService {
 
     @LogMethodResult
     public Collection<User> getFriends(Long id) {
+        userStorage.get(id).get(); // check if user exists
         return userStorage.getFriends(id);
     }
 
@@ -62,9 +63,7 @@ public class UserService {
         User otherUser = userStorage.get(friendId)
                                     .get();
 
-        if (!removeFromFriends(user, otherUser)) {
-            throw new RuntimeException("Не удалось удалить из друзей");
-        }
+        removeFromFriends(user, otherUser);
     }
 
     @LogMethodResult
