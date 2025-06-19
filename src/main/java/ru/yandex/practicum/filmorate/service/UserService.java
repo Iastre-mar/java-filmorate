@@ -14,41 +14,41 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final InMemoryUserStorage userStorage;
 
     @LogMethodResult
     public Collection<User> getAll() {
-        return inMemoryUserStorage.getAll();
+        return userStorage.getAll();
     }
 
     @LogMethodResult
     public User createUser(User user) {
-        return inMemoryUserStorage.persist(user);
+        return userStorage.persist(user);
     }
 
     @LogMethodResult
     public Optional<User> updateUser(User user) {
-        return inMemoryUserStorage.update(user);
+        return userStorage.update(user);
     }
 
     @LogMethodResult
     public Optional<User> getUser(Long id) {
-        return inMemoryUserStorage.get(id);
+        return userStorage.get(id);
     }
 
     @LogMethodResult
     public Collection<User> getFriends(Long id) {
-        return inMemoryUserStorage.getFriends(id);
+        return userStorage.getFriends(id);
     }
 
     @LogMethodResult
     public void addFriend(Long id, Long friendId) {
         checkIdsSanity(id, friendId);
 
-        User user = inMemoryUserStorage.get(id)
-                                       .get();
-        User otherUser = inMemoryUserStorage.get(friendId)
-                                            .get();
+        User user = userStorage.get(id)
+                               .get();
+        User otherUser = userStorage.get(friendId)
+                                    .get();
         if (!addToFriends(user, otherUser)) {
             throw new RuntimeException("Не удалось добавить в друзья");
         }
@@ -57,10 +57,10 @@ public class UserService {
     @LogMethodResult
     public void removeFriend(Long id, Long friendId) {
         checkIdsSanity(id, friendId);
-        User user = inMemoryUserStorage.get(id)
-                                       .get();
-        User otherUser = inMemoryUserStorage.get(friendId)
-                                            .get();
+        User user = userStorage.get(id)
+                               .get();
+        User otherUser = userStorage.get(friendId)
+                                    .get();
 
         if (!removeFromFriends(user, otherUser)) {
             throw new RuntimeException("Не удалось удалить из друзей");
@@ -71,8 +71,8 @@ public class UserService {
     public Collection<User> getCommonFriends(Long id, Long otherId) {
         checkIdsSanity(id, otherId);
 
-        return getFriendsIntersection(inMemoryUserStorage.getFriends(id),
-                                      inMemoryUserStorage.getFriends(otherId));
+        return getFriendsIntersection(userStorage.getFriends(id),
+                                      userStorage.getFriends(otherId));
 
     }
 

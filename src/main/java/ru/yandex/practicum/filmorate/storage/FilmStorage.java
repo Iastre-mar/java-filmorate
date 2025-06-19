@@ -11,4 +11,8 @@ public interface FilmStorage {
     Optional<Film> update(Film film);
 
     Collection<Film> getAll();
+
+    Optional<Film> get(Long id);
+
+    Collection<Film> getTopFilms(Long count);
 }

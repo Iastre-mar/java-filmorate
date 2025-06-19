@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import ru.yandex.practicum.filmorate.util.DurationDeserializer;
 import ru.yandex.practicum.filmorate.util.DurationSerializer;
 import ru.yandex.practicum.filmorate.validation.AfterDate;
@@ -13,6 +16,8 @@ import ru.yandex.practicum.filmorate.validation.PositiveDuration;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -27,4 +32,8 @@ public class Film {
     @NotNull @JsonSerialize(using = DurationSerializer.class)
     @JsonDeserialize(using = DurationDeserializer.class) @PositiveDuration
     private Duration duration;
+
+    @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
+    private final Set<Long> setUserIdsLikedThis = new HashSet<>();
 }
