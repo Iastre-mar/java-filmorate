@@ -36,12 +36,9 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
-    @ExceptionHandler(
-            {
-                    NoSuchElementException.class,
-                    NullPointerException.class
-            }
-    )
+    @ExceptionHandler({
+            NoSuchElementException.class, NullPointerException.class
+    })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNoSuchElementException(
             NoSuchElementException ex
