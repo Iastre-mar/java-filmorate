@@ -9,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import ru.yandex.practicum.filmorate.enums.Genre;
+import ru.yandex.practicum.filmorate.enums.Rating;
 import ru.yandex.practicum.filmorate.util.DurationDeserializer;
 import ru.yandex.practicum.filmorate.util.DurationSerializer;
 import ru.yandex.practicum.filmorate.validation.AfterDate;
@@ -34,4 +36,6 @@ public class Film {
     @NotNull @JsonSerialize(using = DurationSerializer.class)
     @JsonDeserialize(using = DurationDeserializer.class) @PositiveDuration
     private Duration duration;
+    private Rating rating;
+    private Genre genre;
 }
