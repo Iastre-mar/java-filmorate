@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.enums.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -44,9 +45,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     private Set<User> getSetOfFriends(User user) {
-        return user.getFriendsIdSet()
-                   .stream()
-                   .map(users::get)
+        return user.getFriendships().stream()
+                   //.filter(f -> f.getFriendshipStatus() == FriendshipStatus.ACCEPTED)
+                   .map(f -> users.get(f.getFriendId()))
+                   .filter(Objects::nonNull)
                    .collect(Collectors.toSet());
     }
 }
