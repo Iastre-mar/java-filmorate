@@ -39,6 +39,7 @@ public class FilmDbStorage implements FilmStorage {
             loadLikes(film);
             loadGenres(film);
         } catch (EmptyResultDataAccessException e) {
+            // Думаю что сюда засунуть
         }
         return Optional.ofNullable(film);
     }
@@ -156,6 +157,5 @@ public class FilmDbStorage implements FilmStorage {
 
         film.setGenres(genres);
     }
-
 
 }

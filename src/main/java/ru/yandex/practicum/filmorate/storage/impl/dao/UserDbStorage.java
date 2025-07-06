@@ -40,6 +40,7 @@ public class UserDbStorage implements UserStorage {
             user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
             user.setFriendships(getFriendshipsForUser(user.getId()));
         } catch (EmptyResultDataAccessException e) {
+            // Думаю что сюда засунуть
         }
         return Optional.ofNullable(user);
     }
