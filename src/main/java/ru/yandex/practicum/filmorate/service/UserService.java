@@ -7,12 +7,10 @@ import ru.yandex.practicum.filmorate.enums.FriendshipStatus;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -100,39 +98,35 @@ public class UserService {
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
         userFriendship.setFriendshipStatus(FriendshipStatus.PENDING);
-//
-//        Friendship otherFriendship = new Friendship();
-//        otherFriendship.setUserId(otherUser.getId());
-//        otherFriendship.setFriendId(user.getId());
-//        otherFriendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
-//
-        user.getFriendships().add(userFriendship);
-//        otherUser.getFriendships().add(otherFriendship);
+        user.getFriendships()
+            .add(userFriendship);
 
         return true;
     }
 
-    private boolean isAlreadyFriends(User user, User otherUser){
+    private boolean isAlreadyFriends(User user, User otherUser) {
         return isFriendWith(user, otherUser) || isFriendWith(otherUser, user);
     }
 
-    private boolean isFriendWith(User user, User otherUser){
-        return user.getFriendships().stream()
-                   .anyMatch(f -> f.getFriendId().equals(otherUser.getId()));
+    private boolean isFriendWith(User user, User otherUser) {
+        return user.getFriendships()
+                   .stream()
+                   .anyMatch(f -> f.getFriendId()
+                                   .equals(otherUser.getId()));
     }
 
     private boolean removeFromFriends(User user, User otherUser) {
         return removeFriend(user, otherUser) && removeFriend(otherUser, user);
     }
 
-    private boolean removeFriend(User user, User otherUser){
-        return user.getFriendships().removeIf(
-                f -> f.getFriendId().equals(otherUser.getId())
-        );
+    private boolean removeFriend(User user, User otherUser) {
+        return user.getFriendships()
+                   .removeIf(f -> f.getFriendId()
+                                   .equals(otherUser.getId()));
     }
 
     private Collection<User> getFriendsIntersection(Collection<User> userFriends,
-                                             Collection<User> otherUserFriends
+                                                    Collection<User> otherUserFriends
     ) {
         return userFriends.stream()
                           .filter(otherUserFriends::contains)

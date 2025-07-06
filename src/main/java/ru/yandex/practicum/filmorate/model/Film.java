@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,8 +11,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
-import ru.yandex.practicum.filmorate.enums.Genre;
-import ru.yandex.practicum.filmorate.enums.Rating;
 import ru.yandex.practicum.filmorate.util.DurationDeserializer;
 import ru.yandex.practicum.filmorate.util.DurationSerializer;
 import ru.yandex.practicum.filmorate.validation.AfterDate;
@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.validation.PositiveDuration;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,6 +37,9 @@ public class Film {
     @NotNull @JsonSerialize(using = DurationSerializer.class)
     @JsonDeserialize(using = DurationDeserializer.class) @PositiveDuration
     private Duration duration;
+    @JsonProperty("mpa")
+    @Valid
     private Rating rating;
-    private Genre genre;
+    @Valid
+    private List<Genre> genres;
 }

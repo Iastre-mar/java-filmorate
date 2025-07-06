@@ -7,11 +7,9 @@ import ru.yandex.practicum.filmorate.enums.FriendshipStatus;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Friendship {
-    @EqualsAndHashCode.Include
-    private Long userId;
+    @EqualsAndHashCode.Include private Long userId;
 
-    @EqualsAndHashCode.Include
-    private Long friendId;
+    @EqualsAndHashCode.Include private Long friendId;
 
     private FriendshipStatus friendshipStatus;
 }

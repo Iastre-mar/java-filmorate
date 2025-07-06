@@ -2,12 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -15,8 +16,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-    private final InMemoryFilmStorage filmStorage;
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final FilmStorage filmStorage;
+    @Qualifier("userDbStorage") private final UserStorage userStorage;
 
     @LogMethodResult
     public Collection<Film> getAll() {
@@ -37,7 +38,7 @@ public class FilmService {
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = filmStorage.get(filmId)
                                .get();
-        User user = inMemoryUserStorage.get(userId)
+        User user = userStorage.get(userId)
                                        .get();
 
         film.getSetUserIdsLikedThis()
@@ -48,7 +49,7 @@ public class FilmService {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = filmStorage.get(filmId)
                                .get();
-        User user = inMemoryUserStorage.get(userId)
+        User user = userStorage.get(userId)
                                        .get();
         film.getSetUserIdsLikedThis()
             .remove(user.getId());

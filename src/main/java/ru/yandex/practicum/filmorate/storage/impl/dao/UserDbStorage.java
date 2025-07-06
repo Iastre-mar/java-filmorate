@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.impl.dao;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FriendshipMapper;
 import ru.yandex.practicum.filmorate.storage.mapper.UserRowMapper;
 
@@ -17,7 +18,7 @@ import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
-public class UserDbStorage implements UserStorage{
+public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,7 +59,8 @@ public class UserDbStorage implements UserStorage{
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(sql,
+                                                               Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getLogin());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getName());
@@ -66,7 +68,8 @@ public class UserDbStorage implements UserStorage{
             return ps;
         }, keyHolder);
 
-        Long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        Long generatedId = Objects.requireNonNull(keyHolder.getKey())
+                                  .longValue();
         user.setId(generatedId);
         saveFriendships(user);
         return user;
@@ -75,14 +78,10 @@ public class UserDbStorage implements UserStorage{
     @Override
     public Optional<User> update(User user) {
         String sql = "UPDATE users SET login = ?, email = ?, name = ?, birthday = ? WHERE id = ?";
-        jdbcTemplate.update(
-                sql,
-                user.getLogin(),
-                user.getEmail(),
-                user.getName(),
-                java.sql.Date.valueOf(user.getBirthday()),
-                user.getId()
-        );
+        jdbcTemplate.update(sql, user.getLogin(), user.getEmail(),
+                            user.getName(),
+                            java.sql.Date.valueOf(user.getBirthday()),
+                            user.getId());
 
         deleteFriendships(user.getId());
         saveFriendships(user);
@@ -97,7 +96,8 @@ public class UserDbStorage implements UserStorage{
             batchArgs.add(new Object[]{
                     user.getId(),
                     friendship.getFriendId(),
-                    friendship.getFriendshipStatus().ordinal() + 1
+                    friendship.getFriendshipStatus()
+                              .ordinal() + 1
             });
         }
 
@@ -111,7 +111,8 @@ public class UserDbStorage implements UserStorage{
 
     private Set<Friendship> getFriendshipsForUser(Long userId) {
         String sql = "SELECT * FROM friendships WHERE user_id = ?";
-        return new HashSet<>(jdbcTemplate.query(sql, friendshipMapper, userId));
+        return new HashSet<>(
+                jdbcTemplate.query(sql, friendshipMapper, userId));
     }
 
 }
