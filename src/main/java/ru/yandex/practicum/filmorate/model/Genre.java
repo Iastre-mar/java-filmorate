@@ -1,17 +1,23 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Genre {
-    @NotNull
-    private Long id;
+    @NotNull private Long id;
     private String name;
+
+
+    public Genre(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Genre() {
+    }
+
+    public Genre(Long id) {
+        this.id = id;
+    }
 }

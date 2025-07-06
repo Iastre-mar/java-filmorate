@@ -16,8 +16,7 @@ public class FriendshipMapper implements RowMapper<Friendship> {
         friendship.setUserId(rs.getLong("user_id"));
         friendship.setFriendId(rs.getLong("friend_id"));
         friendship.setFriendshipStatus(
-                FriendshipStatus.values()[(int) (rs.getLong("status_id") -
-                                                 1
+                FriendshipStatus.values()[(int) (rs.getLong("status_id") - 1
                 )]);
         return friendship;
     }

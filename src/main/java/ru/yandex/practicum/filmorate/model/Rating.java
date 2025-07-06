@@ -2,14 +2,11 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Setter
-@Getter
+@Data
 public class Rating {
-    @NotNull
-    private Long id;
+    @NotNull private Long id;
     private String name;
 }

@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -16,8 +16,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-    private final FilmStorage filmStorage;
-    @Qualifier("userDbStorage") private final UserStorage userStorage;
+    @Qualifier("filmDbStorage") private final FilmStorage filmStorage;
+    private final UserService userService;
+    private final RatingService ratingService;
 
     @LogMethodResult
     public Collection<Film> getAll() {
@@ -26,7 +27,12 @@ public class FilmService {
 
     @LogMethodResult
     public Film add(Film film) {
-        return filmStorage.persist(film);
+        filmStorage.persist(film);
+
+        Rating fullRating = ratingService.getRatingOrThrow(film.getRating()
+                                                               .getId());
+        film.setRating(fullRating);
+        return film;
     }
 
     @LogMethodResult
@@ -38,8 +44,8 @@ public class FilmService {
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = filmStorage.get(filmId)
                                .get();
-        User user = userStorage.get(userId)
-                                       .get();
+        User user = userService.getUser(userId)
+                               .get();
 
         film.getSetUserIdsLikedThis()
             .add(user.getId());
@@ -49,8 +55,8 @@ public class FilmService {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = filmStorage.get(filmId)
                                .get();
-        User user = userStorage.get(userId)
-                                       .get();
+        User user = userService.getUser(userId)
+                               .get();
         film.getSetUserIdsLikedThis()
             .remove(user.getId());
     }

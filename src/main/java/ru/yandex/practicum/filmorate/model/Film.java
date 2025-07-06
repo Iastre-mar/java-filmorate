@@ -7,10 +7,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import ru.yandex.practicum.filmorate.util.DurationDeserializer;
 import ru.yandex.practicum.filmorate.util.DurationSerializer;
 import ru.yandex.practicum.filmorate.validation.AfterDate;
@@ -28,8 +26,8 @@ import java.util.Set;
 @Data
 public class Film {
     public static final String START_OF_EPOCH = "1895-12-28";
-    @Setter(AccessLevel.NONE) @EqualsAndHashCode.Exclude
-    private final Set<Long> setUserIdsLikedThis = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private Set<Long> setUserIdsLikedThis = new HashSet<>();
     private long id;
     @NotBlank private String name;
     @Size(max = 200) private String description;
@@ -37,9 +35,6 @@ public class Film {
     @NotNull @JsonSerialize(using = DurationSerializer.class)
     @JsonDeserialize(using = DurationDeserializer.class) @PositiveDuration
     private Duration duration;
-    @JsonProperty("mpa")
-    @Valid
-    private Rating rating;
-    @Valid
-    private List<Genre> genres;
+    @JsonProperty("mpa") @Valid private Rating rating;
+    @Valid private List<Genre> genres;
 }
