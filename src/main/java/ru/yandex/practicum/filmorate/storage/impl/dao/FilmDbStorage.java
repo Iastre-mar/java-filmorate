@@ -133,8 +133,7 @@ public class FilmDbStorage implements FilmStorage {
         List<Object[]> batchArgs = film.getGenres()
                                        .stream()
                                        .map(genre -> new Object[]{
-                                               film.getId(),
-                                               genre.getId()
+                                               film.getId(), genre.getId()
                                        })
                                        .collect(Collectors.toList());
 

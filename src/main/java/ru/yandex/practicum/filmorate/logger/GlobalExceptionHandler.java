@@ -45,8 +45,7 @@ public class GlobalExceptionHandler {
             RatingNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNoSuchElementException(
-            NoSuchElementException ex
+    public Map<String, String> handleNoSuchElementException(RuntimeException ex
     ) {
         return Map.of("error", ex.getMessage());
     }

@@ -18,10 +18,6 @@ public class GenreService {
     private final GenreStorage genreStorage;
 
     @LogMethodResult
-    public Optional<Genre> getGenre(Long id) {
-        return genreStorage.get(id);
-    }
-
     public Genre getGenreOrThrow(Long id) {
         return genreStorage.get(id)
                            .orElseThrow(() -> new GenreNotFoundException(
