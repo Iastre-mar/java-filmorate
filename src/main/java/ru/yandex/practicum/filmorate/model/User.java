@@ -18,8 +18,8 @@ import java.util.Set;
  */
 @Data
 public class User {
-    @Setter(AccessLevel.NONE) @EqualsAndHashCode.Exclude
-    private final Set<Friendship> friendships = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private Set<Friendship> friendships = new HashSet<>();
     private long id;
     @NotBlank @Email private String email;
     @NotBlank @Pattern(regexp = "\\S+") private String login;

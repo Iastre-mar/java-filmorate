@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.enums.FriendshipStatus;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final InMemoryUserStorage userStorage;
+    @Qualifier("userDbStorage") private final UserStorage userStorage;
 
     @LogMethodResult
     public Collection<User> getAll() {
@@ -56,6 +58,9 @@ public class UserService {
         if (!addToFriends(user, otherUser)) {
             throw new RuntimeException("Не удалось добавить в друзья");
         }
+
+        userStorage.update(user);
+        userStorage.update(otherUser);
     }
 
     @LogMethodResult
@@ -92,15 +97,17 @@ public class UserService {
         }
 
         Friendship userFriendship = new Friendship();
+        userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
-        userFriendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
-
-        Friendship otherFriendship = new Friendship();
-        otherFriendship.setFriendId(user.getId());
-        otherFriendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
-
+        userFriendship.setFriendshipStatus(FriendshipStatus.PENDING);
+//
+//        Friendship otherFriendship = new Friendship();
+//        otherFriendship.setUserId(otherUser.getId());
+//        otherFriendship.setFriendId(user.getId());
+//        otherFriendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
+//
         user.getFriendships().add(userFriendship);
-        otherUser.getFriendships().add(otherFriendship);
+//        otherUser.getFriendships().add(otherFriendship);
 
         return true;
     }
@@ -124,8 +131,8 @@ public class UserService {
         );
     }
 
-    private Set<User> getFriendsIntersection(Set<User> userFriends,
-                                             Set<User> otherUserFriends
+    private Collection<User> getFriendsIntersection(Collection<User> userFriends,
+                                             Collection<User> otherUserFriends
     ) {
         return userFriends.stream()
                           .filter(otherUserFriends::contains)
