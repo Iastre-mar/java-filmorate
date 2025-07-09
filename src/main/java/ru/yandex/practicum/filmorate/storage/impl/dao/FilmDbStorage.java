@@ -6,16 +6,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.storage.mapper.RatingRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +29,13 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Film> getAll() {
         String sql = "SELECT * FROM films";
-        return jdbcTemplate.query(sql, filmRowMapper);
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper);
+        for (Film film : films) {
+            loadLikes(film);
+            loadGenres(film);
+            loadRating(film);
+        }
+        return films;
     }
 
     @Override
@@ -38,8 +46,10 @@ public class FilmDbStorage implements FilmStorage {
             film = jdbcTemplate.queryForObject(sql, filmRowMapper, id);
             loadLikes(film);
             loadGenres(film);
+            loadRating(film);
         } catch (EmptyResultDataAccessException e) {
-            // Думаю что сюда засунуть
+            throw new FilmNotFoundException(
+                    "Film with id %d doesn't exist".formatted(id));
         }
         return Optional.ofNullable(film);
     }
@@ -100,18 +110,24 @@ public class FilmDbStorage implements FilmStorage {
                      "ORDER BY likes_count DESC " +
                      "LIMIT ?";
 
-        return jdbcTemplate.query(sql, filmRowMapper, count);
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, count);
+        for (Film film : films) {
+            loadLikes(film);
+            loadGenres(film);
+            loadRating(film);
+        }
+        return films;
     }
 
     private void saveLikes(Film film) {
 
         String sql = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
-        List<Object[]> batchArgs = film.getSetUserIdsLikedThis()
-                                       .stream()
-                                       .map(userId -> new Object[]{
-                                               film.getId(), userId
-                                       })
-                                       .toList();
+        List<Object[]> batchArgs = new HashSet<>(
+                film.getSetUserIdsLikedThis()).stream()
+                                              .map(userId -> new Object[]{
+                                                      film.getId(), userId
+                                              })
+                                              .toList();
 
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }
@@ -128,14 +144,24 @@ public class FilmDbStorage implements FilmStorage {
         film.setSetUserIdsLikedThis(new HashSet<>(likes));
     }
 
+    private void loadRating(Film film) {
+        String sql = "SELECT id, code FROM ref_rating WHERE id = ?";
+
+        Rating rating = jdbcTemplate.queryForObject(sql, new RatingRowMapper(),
+                                                    film.getRating()
+                                                        .getId());
+        film.setRating(rating);
+
+    }
+
     private void saveFilmGenres(Film film) {
         String sql = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
-        List<Object[]> batchArgs = film.getGenres()
-                                       .stream()
-                                       .map(genre -> new Object[]{
-                                               film.getId(), genre.getId()
-                                       })
-                                       .collect(Collectors.toList());
+        List<Object[]> batchArgs = new HashSet<>(film.getGenres()).stream()
+                                                                  .map(genre -> new Object[]{
+                                                                          film.getId(),
+                                                                          genre.getId()
+                                                                  })
+                                                                  .toList();
 
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }

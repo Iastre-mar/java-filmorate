@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.GenreRowMapper;
@@ -22,12 +23,14 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Optional<Genre> get(Long id) {
         String sql = "SELECT id, name FROM ref_genre WHERE id = ?";
+        Genre genre = null;
         try {
-            Genre genre = jdbcTemplate.queryForObject(sql, genreRowMapper, id);
-            return Optional.ofNullable(genre);
+            genre = jdbcTemplate.queryForObject(sql, genreRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new GenreNotFoundException(
+                    "Genre with id %d doesn't exist".formatted(id));
         }
+        return Optional.ofNullable(genre);
     }
 
     @Override

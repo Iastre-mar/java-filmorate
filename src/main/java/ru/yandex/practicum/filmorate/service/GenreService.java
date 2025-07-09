@@ -8,8 +8,9 @@ import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -29,11 +30,17 @@ public class GenreService {
         return genreStorage.getAll();
     }
 
-    public Optional<Genre> getGenreByName(String name) {
-        return genreStorage.getAll()
-                           .stream()
-                           .filter(g -> g.getName()
-                                         .equalsIgnoreCase(name))
-                           .findFirst();
+    @LogMethodResult
+    protected List<Genre> getGenreOrThrow(List<Genre> genres) {
+        List<Genre> resGenres = getEmptyArrayIfNull(genres);
+        resGenres = resGenres.stream()
+                             .map(genre -> getGenreOrThrow(genre.getId()))
+                             .toList();
+        return resGenres;
     }
+
+    private List<Genre> getEmptyArrayIfNull(List<Genre> genres) {
+        return genres == null ? new ArrayList<>() : genres;
+    }
+
 }

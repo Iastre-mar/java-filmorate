@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.RatingNotFoundException;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.mapper.RatingRowMapper;
@@ -20,13 +21,15 @@ public class RatingDbStorage implements RatingStorage {
     @Override
     public Optional<Rating> get(Long id) {
         String sql = "SELECT id, code FROM ref_rating WHERE id = ?";
+        Rating rating = null;
         try {
-            Rating rating = jdbcTemplate.queryForObject(sql, ratingRowMapper,
-                                                        id);
-            return Optional.ofNullable(rating);
+            rating = jdbcTemplate.queryForObject(sql, ratingRowMapper, id);
+
         } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            throw new RatingNotFoundException(
+                    "Rating with id %d doesn't exist".formatted(id));
         }
+        return Optional.ofNullable(rating);
     }
 
     @Override

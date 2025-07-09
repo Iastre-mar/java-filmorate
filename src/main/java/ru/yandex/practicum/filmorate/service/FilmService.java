@@ -19,6 +19,7 @@ public class FilmService {
     @Qualifier("filmDbStorage") private final FilmStorage filmStorage;
     private final UserService userService;
     private final RatingService ratingService;
+    private final GenreService genreService;
 
     @LogMethodResult
     public Collection<Film> getAll() {
@@ -27,6 +28,9 @@ public class FilmService {
 
     @LogMethodResult
     public Film add(Film film) {
+        film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
+        ratingService.getRatingOrThrow(film.getRating()
+                                           .getId());
         filmStorage.persist(film);
 
         Rating fullRating = ratingService.getRatingOrThrow(film.getRating()
@@ -37,31 +41,42 @@ public class FilmService {
 
     @LogMethodResult
     public Optional<Film> update(Film film) {
+        getFilmByIdOrThrow(film.getId());
+        film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
         return filmStorage.update(film);
     }
 
     @LogMethodResult
     public void addLikeToFilm(Long filmId, Long userId) {
-        Film film = filmStorage.get(filmId)
-                               .get();
+        Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
                                .get();
 
         film.getSetUserIdsLikedThis()
             .add(user.getId());
+
+        update(film);
     }
 
     @LogMethodResult
     public void removeLikeFromFilm(Long filmId, Long userId) {
-        Film film = filmStorage.get(filmId)
-                               .get();
+        Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
                                .get();
         film.getSetUserIdsLikedThis()
             .remove(user.getId());
+
+        update(film);
     }
 
+    @LogMethodResult
     public Collection<Film> getTopFilms(Long count) {
         return filmStorage.getTopFilms(count);
     }
+
+    @LogMethodResult
+    public Optional<Film> getFilmByIdOrThrow(Long id) {
+        return filmStorage.get(id);
+    }
+
 }
