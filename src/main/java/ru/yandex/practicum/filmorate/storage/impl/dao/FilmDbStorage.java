@@ -31,9 +31,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT * FROM films";
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper);
         for (Film film : films) {
-            loadLikes(film);
-            loadGenres(film);
-            loadRating(film);
+            loadLinkedFilmData(film);
         }
         return films;
     }
@@ -44,9 +42,7 @@ public class FilmDbStorage implements FilmStorage {
         Film film = null;
         try {
             film = jdbcTemplate.queryForObject(sql, filmRowMapper, id);
-            loadLikes(film);
-            loadGenres(film);
-            loadRating(film);
+            loadLinkedFilmData(film);
         } catch (EmptyResultDataAccessException e) {
             throw new FilmNotFoundException(
                     "Film with id %d doesn't exist".formatted(id));
@@ -77,8 +73,7 @@ public class FilmDbStorage implements FilmStorage {
         Long generatedId = Objects.requireNonNull(keyHolder.getKey())
                                   .longValue();
         film.setId(generatedId);
-        saveLikes(film);
-        saveFilmGenres(film);
+        saveLinkedFilmData(film);
         return film;
     }
 
@@ -92,11 +87,8 @@ public class FilmDbStorage implements FilmStorage {
                             film.getDuration(), film.getRating()
                                                     .getId(), film.getId());
 
-        deleteLikes(film.getId());
-        saveLikes(film);
-
-        deleteGenres(film.getId());
-        saveFilmGenres(film);
+        deleteLinkedFilmData(film);
+        saveLinkedFilmData(film);
         return Optional.of(film);
 
     }
@@ -112,11 +104,25 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Film> films = jdbcTemplate.query(sql, filmRowMapper, count);
         for (Film film : films) {
-            loadLikes(film);
-            loadGenres(film);
-            loadRating(film);
+            loadLinkedFilmData(film);
         }
         return films;
+    }
+
+    private void loadLinkedFilmData(Film film) {
+        loadLikes(film);
+        loadGenres(film);
+        loadRating(film);
+    }
+
+    private void deleteLinkedFilmData(Film film) {
+        deleteGenres(film);
+        deleteLikes(film);
+    }
+
+    private void saveLinkedFilmData(Film film) {
+        saveLikes(film);
+        saveFilmGenres(film);
     }
 
     private void saveLikes(Film film) {
@@ -132,9 +138,9 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 
-    private void deleteLikes(Long filmId) {
+    private void deleteLikes(Film film) {
         String sql = "DELETE FROM film_likes WHERE film_id = ?";
-        jdbcTemplate.update(sql, filmId);
+        jdbcTemplate.update(sql, film.getId());
     }
 
     private void loadLikes(Film film) {
@@ -166,9 +172,9 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 
-    private void deleteGenres(Long filmId) {
+    private void deleteGenres(Film film) {
         String sql = "DELETE FROM film_genres WHERE film_id = ?";
-        jdbcTemplate.update(sql, filmId);
+        jdbcTemplate.update(sql, film.getId());
     }
 
     private void loadGenres(Film film) {
