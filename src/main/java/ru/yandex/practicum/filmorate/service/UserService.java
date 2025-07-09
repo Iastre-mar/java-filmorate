@@ -65,6 +65,9 @@ public class UserService {
         User otherUser = getUser(friendId).get();
 
         removeFromFriends(user, otherUser);
+
+        updateUser(user);
+        updateUser(otherUser);
     }
 
     @LogMethodResult
