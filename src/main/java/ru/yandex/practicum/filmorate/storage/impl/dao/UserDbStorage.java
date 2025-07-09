@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -40,7 +41,8 @@ public class UserDbStorage implements UserStorage {
             user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
             user.setFriendships(getFriendshipsForUser(user.getId()));
         } catch (EmptyResultDataAccessException e) {
-            // Думаю что сюда засунуть
+            throw new UserNotFoundException(
+                    "User with id %d doesn't exist".formatted(id));
         }
         return Optional.ofNullable(user);
     }

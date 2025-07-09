@@ -40,8 +40,7 @@ public class UserService {
 
     @LogMethodResult
     public Collection<User> getFriends(Long id) {
-        userStorage.get(id)
-                   .get(); // check if user exists
+        getUser(id);
         return userStorage.getFriends(id);
     }
 
@@ -49,25 +48,21 @@ public class UserService {
     public void addFriend(Long id, Long friendId) {
         checkIdsSanity(id, friendId);
 
-        User user = userStorage.get(id)
-                               .get();
-        User otherUser = userStorage.get(friendId)
-                                    .get();
+        User user = getUser(id).get();
+        User otherUser = getUser(friendId).get();
         if (!addToFriends(user, otherUser)) {
             throw new RuntimeException("Не удалось добавить в друзья");
         }
 
-        userStorage.update(user);
-        userStorage.update(otherUser);
+        updateUser(user);
+        updateUser(otherUser);
     }
 
     @LogMethodResult
     public void removeFriend(Long id, Long friendId) {
         checkIdsSanity(id, friendId);
-        User user = userStorage.get(id)
-                               .get();
-        User otherUser = userStorage.get(friendId)
-                                    .get();
+        User user = getUser(id).get();
+        User otherUser = getUser(friendId).get();
 
         removeFromFriends(user, otherUser);
     }
