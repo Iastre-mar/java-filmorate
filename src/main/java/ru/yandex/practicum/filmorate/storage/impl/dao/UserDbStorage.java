@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl.dao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -16,13 +17,15 @@ import ru.yandex.practicum.filmorate.storage.mapper.UserRowMapper;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final FriendshipMapper friendshipMapper;
 
     private final UserRowMapper userRowMapper;
@@ -30,7 +33,9 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Collection<User> getAll() {
         String sql = "SELECT * FROM users";
-        return jdbcTemplate.query(sql, userRowMapper);
+        List<User> users = jdbcTemplate.query(sql, userRowMapper);
+        loadFriendshipsForUsers(users);
+        return users;
     }
 
     @Override
@@ -97,8 +102,7 @@ public class UserDbStorage implements UserStorage {
 
         for (Friendship friendship : user.getFriendships()) {
             batchArgs.add(new Object[]{
-                    user.getId(),
-                    friendship.getFriendId()
+                    user.getId(), friendship.getFriendId()
             });
         }
 
@@ -114,6 +118,35 @@ public class UserDbStorage implements UserStorage {
         String sql = "SELECT * FROM friendships WHERE user_id = ?";
         return new HashSet<>(
                 jdbcTemplate.query(sql, friendshipMapper, userId));
+    }
+
+    private void loadFriendshipsForUsers(List<User> users) {
+
+        Map<Long, User> userMap = users.stream()
+                                       .collect(Collectors.toMap(User::getId,
+                                                                 Function.identity()));
+
+        Set<Long> userIds = userMap.keySet();
+
+        String sql = "SELECT * FROM friendships WHERE user_id IN (:userIds)";
+        Map<String, Object> params = Collections.singletonMap("userIds",
+                                                              userIds);
+
+        List<Friendship> friendships = namedParameterJdbcTemplate.query(sql,
+                                                                        params,
+                                                                        friendshipMapper);
+
+        Map<Long, Set<Friendship>> friendshipsByUser = friendships.stream()
+                                                                  .collect(
+                                                                          Collectors.groupingBy(
+                                                                                  Friendship::getUserId,
+                                                                                  Collectors.toSet()));
+
+        for (User user : users) {
+            Set<Friendship> userFriendships = friendshipsByUser.getOrDefault(
+                    user.getId(), new HashSet<>());
+            user.setFriendships(userFriendships);
+        }
     }
 
 }

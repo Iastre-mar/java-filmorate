@@ -6,7 +6,7 @@ MERGE INTO ref_rating (id, code)
            (4, 'R'),
            (5, 'NC-17');
 
-Merge INTO ref_genre (id, name)
+MERGE INTO ref_genre (id, name)
     VALUES (1, 'Комедия'),
            (2, 'Драма'),
            (3, 'Мультфильм'),
