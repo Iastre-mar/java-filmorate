@@ -33,23 +33,6 @@ CREATE TABLE IF NOT EXISTS ref_genre
 ) NOT NULL UNIQUE
     );
 
-CREATE TABLE IF NOT EXISTS ref_friendship_status
-(
-    id
-    BIGINT
-    GENERATED
-    BY
-    DEFAULT AS
-    IDENTITY
-    PRIMARY
-    KEY,
-    status
-    VARCHAR
-(
-    20
-) NOT NULL UNIQUE
-    );
-
 -- Создание основных таблиц
 CREATE TABLE IF NOT EXISTS users
 (
@@ -155,10 +138,6 @@ CREATE TABLE IF NOT EXISTS friendships
     BIGINT
     NOT
     NULL,
-    status_id
-    BIGINT
-    NOT
-    NULL,
     PRIMARY
     KEY
 (
@@ -176,14 +155,6 @@ CREATE TABLE IF NOT EXISTS friendships
 (
     friend_id
 ) REFERENCES users
-(
-    id
-)
-  ON DELETE CASCADE,
-    FOREIGN KEY
-(
-    status_id
-) REFERENCES ref_friendship_status
 (
     id
 )

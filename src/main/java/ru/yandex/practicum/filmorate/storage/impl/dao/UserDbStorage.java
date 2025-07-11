@@ -92,15 +92,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     private void saveFriendships(User user) {
-        String sql = "INSERT INTO friendships (user_id, friend_id, status_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO friendships (user_id, friend_id) VALUES (?, ?)";
         List<Object[]> batchArgs = new ArrayList<>();
 
         for (Friendship friendship : user.getFriendships()) {
             batchArgs.add(new Object[]{
                     user.getId(),
-                    friendship.getFriendId(),
-                    friendship.getFriendshipStatus()
-                              .ordinal() + 1
+                    friendship.getFriendId()
             });
         }
 

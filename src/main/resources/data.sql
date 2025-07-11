@@ -14,7 +14,3 @@ Merge INTO ref_genre (id, name)
            (5, 'Документальный'),
            (6, 'Боевик')
 ;
-
-MERGE INTO ref_friendship_status (id, status)
-    VALUES (1, 'PENDING'),
-           (2, 'ACCEPTED');

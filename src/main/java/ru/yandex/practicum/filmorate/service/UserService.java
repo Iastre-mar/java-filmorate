@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.enums.FriendshipStatus;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
@@ -95,7 +94,6 @@ public class UserService {
         Friendship userFriendship = new Friendship();
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
-        userFriendship.setFriendshipStatus(FriendshipStatus.PENDING);
         user.getFriendships()
             .add(userFriendship);
 
