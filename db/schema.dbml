@@ -1,0 +1,66 @@
+// Справочники
+
+Table ref_rating {
+  id bigint [pk]
+  code varchar [not null, unique]
+}
+
+Table ref_genre {
+  id bigint [pk]
+  name varchar [not null, unique]
+}
+
+Table ref_friendship_status {
+  id bigint [pk]
+  status varchar [not null, unique]
+}
+
+// Главные сущности
+
+Table users {
+  id bigint [pk]
+  login varchar [not null]
+  email varchar [not null]
+  name varchar
+  birthday date
+}
+
+Table films {
+  id bigint [pk]
+  name varchar [not null]
+  description varchar(200)
+  release_date date
+  duration int
+  rating_id bigint [not null, ref: > ref_rating.id]
+}
+
+// Сущности связей
+
+Table film_genres {
+  id bigint [pk]
+  genre_id bigint [not null, ref: > ref_genre.id]
+  film_id bigint [not null, ref: > films.id]
+
+  indexes {
+    (film_id, genre_id) [unique, name: 'uidx_film_genre']
+  }
+}
+
+Table friendships {
+  user_id bigint [not null, ref: > users.id]
+  friend_id bigint [not null, ref: > users.id]
+  status_id bigint [not null, ref: > ref_friendship_status.id]
+
+  indexes {
+    (user_id, friend_id) [unique, name: 'uidx_user_friend']
+  }
+}
+
+Table film_likes {
+  film_id bigint [not null, ref: > films.id]
+  user_id bigint [not null, ref: > users.id]
+
+  indexes {
+    (film_id, user_id) [unique, name: 'uidx_film_user_like']
+  }
+}
