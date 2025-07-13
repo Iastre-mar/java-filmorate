@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,11 +23,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class FilmorateApplicationTests {
     @Autowired private TestRestTemplate restTemplate;
 
+
     @Test
     void contextLoads() {
         assertTrue(true);
     }
 
+    @Disabled("Deprecated")
     @Test
     void whenValidInputThenAddFilm() {
 

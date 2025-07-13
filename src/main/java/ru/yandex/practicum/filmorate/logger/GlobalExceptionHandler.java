@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exceptions.FilmorateNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,11 +38,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            NoSuchElementException.class, NullPointerException.class
+            NoSuchElementException.class,
+            NullPointerException.class,
+            FilmorateNotFoundException.class
+
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNoSuchElementException(
-            NoSuchElementException ex
+    public Map<String, String> handleNoSuchElementException(RuntimeException ex
     ) {
         return Map.of("error", ex.getMessage());
     }
