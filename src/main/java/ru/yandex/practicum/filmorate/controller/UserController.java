@@ -26,6 +26,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
+        userService.getUser(user.getId());
         return userService.updateUser(user)
                           .get();
     }
