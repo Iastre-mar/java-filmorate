@@ -1,5 +1,5 @@
 # java-filmorate
-## Схема базы данных
+## Схема базы данных (dbml файл - /docs/erd/schema.txt)
 
 ![Схема БД](docs/erd/latest.svg)
 
