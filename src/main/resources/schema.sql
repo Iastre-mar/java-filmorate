@@ -73,6 +73,17 @@ CREATE TABLE IF NOT EXISTS film_likes
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS review_likes
+(
+    review_id BIGINT  NOT NULL,
+    user_id   BIGINT  NOT NULL,
+    is_like   BOOLEAN NOT NULL,
+    PRIMARY KEY (review_id, user_id),
+    FOREIGN KEY (review_id) REFERENCES reviews (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
 -- Создание индексов
 CREATE UNIQUE INDEX IF NOT EXISTS uidx_film_genre ON film_genres (film_id, genre_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uidx_film_user_like ON film_likes (film_id, user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uidx_review_user ON review_likes (review_id, user_id);
