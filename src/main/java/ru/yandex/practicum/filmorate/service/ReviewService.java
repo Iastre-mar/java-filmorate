@@ -83,7 +83,7 @@ public class ReviewService {
 
 
     private void checkExistenceOfFilmUser(Review review) {
-        userService.getUser(review.getId());
+        userService.getUser(review.getUserId());
         filmService.getFilmByIdOrThrow(review.getFilmId());
     }
 

@@ -11,7 +11,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
-    ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @GetMapping("{id}")
     public Review getReviewById(@PathVariable Long id) {
