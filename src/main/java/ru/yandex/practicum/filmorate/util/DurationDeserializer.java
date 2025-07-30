@@ -16,7 +16,7 @@ public class DurationDeserializer extends JsonDeserializer<Duration> {
         }
         try {
             long minutes = Long.parseLong(p.getValueAsString());
-            return Duration.ofSeconds(minutes);
+            return Duration.ofMinutes(minutes);
         } catch (NumberFormatException e) {
             return Duration.parse(p.getValueAsString());
         }
