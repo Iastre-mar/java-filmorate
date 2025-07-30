@@ -50,19 +50,15 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getTopFilms(
-            @RequestParam(required = false) Long count
-    ) {
+    public Collection<Film> getTopFilms(@RequestParam(required = false) Long count) {
         if (count == null) {
             count = 10L;
         }
         return filmService.getTopFilms(count);
     }
+
     @GetMapping("/common")
-    public Collection<Film> getCommonFilms(
-            @RequestParam Long userId,
-            @RequestParam Long friendId
-    ) {
+    public Collection<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 
