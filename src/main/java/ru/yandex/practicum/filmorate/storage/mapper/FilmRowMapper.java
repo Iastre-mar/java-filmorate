@@ -17,14 +17,12 @@ public class FilmRowMapper implements RowMapper<Film> {
         Film film = new Film();
         film.setId(rs.getLong("id"));
         film.setName(rs.getString("name"));
+        film.setDescription(rs.getString("description")); // ✅ Добавлена строка
         film.setDuration(Duration.ofMinutes(rs.getInt("duration")));
-        film.setReleaseDate(rs.getDate("release_date")
-                              .toLocalDate());
-        film.setDuration(Duration.ofMinutes(rs.getInt("duration")));
+        film.setReleaseDate(rs.getDate("release_date").toLocalDate());
         Rating rating = new Rating();
         rating.setId(rs.getLong("rating_id"));
         film.setRating(rating);
         return film;
     }
-
 }
