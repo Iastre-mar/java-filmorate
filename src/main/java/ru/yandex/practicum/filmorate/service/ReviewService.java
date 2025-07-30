@@ -24,14 +24,14 @@ public class ReviewService {
 
     @LogMethodResult
     public Review add(Review review) {
-        review.setUseful(0);
+        review.setUseful(0L);
         checkExistenceOfFilmUser(review);
         return reviewStorage.persist(review);
     }
 
     @LogMethodResult
     public Optional<Review> update(Review review) {
-        getReviewByIdOrThrow(review.getId());
+        getReviewByIdOrThrow(review.getReviewId());
         checkExistenceOfFilmUser(review);
         return reviewStorage.update(review);
     }
@@ -63,21 +63,21 @@ public class ReviewService {
     @LogMethodResult
     public Review addDislikeToReview(Long reviewId, Long userId) {
         checkExistenceOfReviewUser(reviewId, userId);
-        reviewStorage.addLikeToReview(reviewId, userId);
+        reviewStorage.addDislikeToReview(reviewId, userId);
         return getReviewByIdOrThrow(reviewId);
     }
 
     @LogMethodResult
     public Review removeLikeFromReview(Long reviewId, Long userId) {
         checkExistenceOfReviewUser(reviewId, userId);
-        reviewStorage.addLikeToReview(reviewId, userId);
+        reviewStorage.removeLikeFromReview(reviewId, userId);
         return getReviewByIdOrThrow(reviewId);
     }
 
     @LogMethodResult
     public Review removeDislikeFromReview(Long reviewId, Long userId) {
         checkExistenceOfReviewUser(reviewId, userId);
-        reviewStorage.addLikeToReview(reviewId, userId);
+        reviewStorage.removeDislikeFromReview(reviewId, userId);
         return getReviewByIdOrThrow(reviewId);
     }
 

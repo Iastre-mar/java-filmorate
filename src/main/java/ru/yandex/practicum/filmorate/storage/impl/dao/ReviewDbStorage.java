@@ -30,13 +30,11 @@ public class ReviewDbStorage implements ReviewStorage {
                 "VALUES (?, ?, ?, ?, 0)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        System.out.println(review);
-
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql,
                                                                Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, review.getContent());
-            ps.setBoolean(2, review.isPositive());
+            ps.setBoolean(2, review.getIsPositive());
             ps.setLong(3, review.getUserId());
             ps.setLong(4, review.getFilmId());
             return ps;
@@ -44,15 +42,15 @@ public class ReviewDbStorage implements ReviewStorage {
 
         Long generatedId = Objects.requireNonNull(keyHolder.getKey())
                                   .longValue();
-        review.setId(generatedId);
+        review.setReviewId(generatedId);
         return review;
     }
 
     @Override
     public Optional<Review> update(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ? WHERE id = ?";
-        jdbcTemplate.update(sql, review.getContent(), review.isPositive(),
-                            review.getId());
+        jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(),
+                            review.getReviewId());
         return Optional.of(review);
     }
 
@@ -115,9 +113,10 @@ public class ReviewDbStorage implements ReviewStorage {
         int removedLike = jdbcTemplate.update(
                 "DELETE FROM review_likes WHERE review_id = ? AND user_id = ? AND is_like = TRUE",
                 reviewId, userId);
+
         if (removedLike > 0) {
             jdbcTemplate.update(
-                    "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?",
+                    "UPDATE reviews SET useful = useful - 1 WHERE id = ?",
                     reviewId);
         }
 
