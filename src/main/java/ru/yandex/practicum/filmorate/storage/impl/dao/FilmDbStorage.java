@@ -137,7 +137,7 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private Map<Long, Set<Long>> loadLikesForFilms(Set<Long> filmIds) {
+    public Map<Long, Set<Long>> loadLikesForFilms(Set<Long> filmIds) {
         String sql = "SELECT film_id, user_id FROM film_likes WHERE film_id IN (:filmIds)";
         Map<String, Object> params = Collections.singletonMap("filmIds",
                                                               filmIds);
@@ -154,7 +154,7 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    private Map<Long, List<Genre>> loadGenresForFilms(Set<Long> filmIds) {
+    public Map<Long, List<Genre>> loadGenresForFilms(Set<Long> filmIds) {
         String sql = "SELECT fg.film_id, g.id, g.name " +
                      "FROM film_genres fg " +
                      "JOIN ref_genre g ON fg.genre_id = g.id " +
@@ -176,7 +176,7 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    private Map<Long, Rating> loadRatingsByIds(Set<Long> ratingIds) {
+    public Map<Long, Rating> loadRatingsByIds(Set<Long> ratingIds) {
         String sql = "SELECT id, code FROM ref_rating WHERE id IN (:ratingIds)";
         Map<String, Object> params = Collections.singletonMap("ratingIds",
                                                               ratingIds);
@@ -245,4 +245,19 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "DELETE FROM film_genres WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getId());
     }
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sql = """
+        SELECT f.* 
+        FROM films f
+        JOIN film_likes fl1 ON f.id = fl1.film_id AND fl1.user_id = ?
+        JOIN film_likes fl2 ON f.id = fl2.film_id AND fl2.user_id = ?
+        LEFT JOIN film_likes fl ON f.id = fl.film_id
+        GROUP BY f.id
+        ORDER BY COUNT(fl.user_id) DESC
+    """;
+
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, userId, friendId);
+        return films;
+    }
+
 }
