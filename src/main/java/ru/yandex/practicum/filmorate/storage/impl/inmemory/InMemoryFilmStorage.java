@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryFilmStorage implements FilmStorage {
@@ -17,11 +18,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAll() {
+
         return films.values();
     }
 
     @Override
     public Optional<Film> get(Long id) {
+
         return Optional.ofNullable(films.get(id));
     }
 
@@ -40,15 +43,17 @@ public class InMemoryFilmStorage implements FilmStorage {
 
 
     @Override
-    public Collection<Film> getTopFilms(Long count) {
-        return films.values()
-                    .stream()
-                    .sorted((film1, film2) -> film2.getSetUserIdsLikedThis()
-                                                   .size() -
-                                              film1.getSetUserIdsLikedThis()
-                                                   .size())
-                    .limit(Math.max(0, count))
-                    .toList();
+    public Collection<Film> getTopFilms(Long count, Long genreId, Integer year) {
+        return films.values().stream()
+                .filter(f -> genreId == null ||
+                        f.getGenres().stream().anyMatch(g -> g.getId().equals(genreId)))
+                .filter(f -> year == null ||
+                        f.getReleaseDate().getYear() == year)
+                .sorted((f1, f2) -> Integer.compare(
+                        f2.getSetUserIdsLikedThis().size(),
+                        f1.getSetUserIdsLikedThis().size()))
+                .limit(count != null ? count : 10)
+                .collect(Collectors.toList());
     }
 
     private long generateId() {

@@ -165,7 +165,7 @@ class FilmDbStorageTest {
         jdbcTemplate.update(
                 "INSERT INTO film_likes (film_id, user_id) VALUES (2, 105)");
 
-        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L);
+        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L, 1L, 1895);
 
         assertThat(topFilms).hasSize(2);
 
@@ -221,7 +221,7 @@ class FilmDbStorageTest {
         jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (3, 105)");
         jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (3, 106)");
 
-        Collection<Film> topFilms = filmDbStorage.getTopFilmsByGenreAndYear(2L, 1L, 2021);
+        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L, 1L, 2021);
         assertThat(topFilms).hasSize(1);
         Film firstFilm = topFilms.iterator().next();
         assertThat(firstFilm.getId()).isEqualTo(3L);

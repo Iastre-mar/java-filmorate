@@ -16,13 +16,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-    @Qualifier("filmDbStorage") private final FilmStorage filmStorage;
+    @Qualifier("filmDbStorage")
+    private final FilmStorage filmStorage;
     private final UserService userService;
     private final RatingService ratingService;
     private final GenreService genreService;
 
     @LogMethodResult
     public Collection<Film> getAll() {
+
         return filmStorage.getAll();
     }
 
@@ -70,8 +72,12 @@ public class FilmService {
     }
 
     @LogMethodResult
-    public Collection<Film> getTopFilms(Long count, Long genreId, Integer year) {
+    public Collection<Film> getTopFilmsByGenreAndYear(Long count, Long genreId, Integer year) {
+        return filmStorage.getTopFilms(count, genreId, year);
+    }
 
+    @LogMethodResult
+    public Collection<Film> getTopFilms(Long count, Long genreId, Integer year) {
         return filmStorage.getTopFilms(count, genreId, year);
     }
 
