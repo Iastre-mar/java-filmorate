@@ -206,4 +206,25 @@ class FilmDbStorageTest {
                                              .containsExactlyInAnyOrder(1L,
                                                                         2L);
     }
+
+    @Test
+    void getTopFilmsByGenreAndYear() {
+        jdbcTemplate.update("DELETE FROM film_likes");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (1, 101)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (1, 102)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (2, 103)");
+        jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (1, 1)");
+        jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (2, 1)");
+        jdbcTemplate.update("INSERT INTO films (id, name, description, release_date, duration, rating_id) VALUES (3, 'Film 3', 'Description 3', '2021-01-01', 150, 1)");
+        jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (3, 1)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (3, 104)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (3, 105)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (3, 106)");
+
+        Collection<Film> topFilms = filmDbStorage.getTopFilmsByGenreAndYear(2L, 1L, 2021);
+        assertThat(topFilms).hasSize(1);
+        Film firstFilm = topFilms.iterator().next();
+        assertThat(firstFilm.getId()).isEqualTo(3L);
+        assertThat(firstFilm.getSetUserIdsLikedThis()).hasSize(3);
+    }
 }

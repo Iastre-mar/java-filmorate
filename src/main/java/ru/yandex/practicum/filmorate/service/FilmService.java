@@ -70,12 +70,14 @@ public class FilmService {
     }
 
     @LogMethodResult
-    public Collection<Film> getTopFilms(Long count) {
-        return filmStorage.getTopFilms(count);
+    public Collection<Film> getTopFilms(Long count, Long genreId, Integer year) {
+
+        return filmStorage.getTopFilms(count, genreId, year);
     }
 
     @LogMethodResult
     public Optional<Film> getFilmByIdOrThrow(Long id) {
+
         return filmStorage.get(id);
     }
 

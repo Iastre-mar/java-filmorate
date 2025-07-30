@@ -95,15 +95,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getTopFilms(Long count) {
+    public Collection<Film> getTopFilms(Long count, Long genreId, Integer year) {
         String sql = "SELECT f.*, COUNT(fl.user_id) AS likes_count " +
                      "FROM films f " +
                      "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                     "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                     "WHERE fg.genre_id = ? AND YEAR(f.release_date) = ? " +
                      "GROUP BY f.id " +
                      "ORDER BY likes_count DESC " +
                      "LIMIT ?";
 
-        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, count);
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, genreId, year, count);
         loadLinkedDataForBatch(films);
         return films;
     }
