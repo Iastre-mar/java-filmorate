@@ -15,4 +15,6 @@ public interface FilmStorage {
     Optional<Film> get(Long id);
 
     Collection<Film> getTopFilms(Long count);
+
+    Collection<Film> getDirectorFilms(Long directorId, String sortBy);
 }

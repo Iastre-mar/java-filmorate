@@ -20,6 +20,7 @@ public class FilmService {
     private final UserService userService;
     private final RatingService ratingService;
     private final GenreService genreService;
+    private final DirectorService directorService;
 
     @LogMethodResult
     public Collection<Film> getAll() {
@@ -29,6 +30,7 @@ public class FilmService {
     @LogMethodResult
     public Film add(Film film) {
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
+        film.setDirectors(directorService.getDirectorOrThrow(film.getDirectors()));
         ratingService.getRatingOrThrow(film.getRating()
                                            .getId());
         filmStorage.persist(film);
@@ -43,6 +45,7 @@ public class FilmService {
     public Optional<Film> update(Film film) {
         getFilmByIdOrThrow(film.getId());
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
+        film.setDirectors(directorService.getDirectorOrThrow(film.getDirectors()));
         return filmStorage.update(film);
     }
 
@@ -79,4 +82,8 @@ public class FilmService {
         return filmStorage.get(id);
     }
 
+    @LogMethodResult
+    public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
+        return filmStorage.getDirectorFilms(directorId, sortBy);
+    }
 }

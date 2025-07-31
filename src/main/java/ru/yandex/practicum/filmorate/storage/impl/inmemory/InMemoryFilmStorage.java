@@ -4,10 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class InMemoryFilmStorage implements FilmStorage {
@@ -49,6 +46,11 @@ public class InMemoryFilmStorage implements FilmStorage {
                                                    .size())
                     .limit(Math.max(0, count))
                     .toList();
+    }
+
+    @Override
+    public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
+        return Collections.emptyList();
     }
 
     private long generateId() {
