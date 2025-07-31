@@ -261,7 +261,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void saveLikes(Film film) {
-        String sql = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
+        String sql = "MERGE INTO film_likes (film_id, user_id) VALUES (?, ?)";
         Set<Long> likes = film.getSetUserIdsLikedThis();
         if (likes == null || likes.isEmpty())
             return;
