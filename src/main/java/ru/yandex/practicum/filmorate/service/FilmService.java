@@ -30,7 +30,8 @@ public class FilmService {
     @LogMethodResult
     public Film add(Film film) {
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
-        film.setDirectors(directorService.getDirectorOrThrow(film.getDirectors()));
+        film.setDirectors(
+                directorService.getDirectorOrThrow(film.getDirectors()));
         ratingService.getRatingOrThrow(film.getRating()
                                            .getId());
         filmStorage.persist(film);
@@ -45,7 +46,8 @@ public class FilmService {
     public Optional<Film> update(Film film) {
         getFilmByIdOrThrow(film.getId());
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
-        film.setDirectors(directorService.getDirectorOrThrow(film.getDirectors()));
+        film.setDirectors(
+                directorService.getDirectorOrThrow(film.getDirectors()));
         return filmStorage.update(film);
     }
 
@@ -58,7 +60,7 @@ public class FilmService {
         film.getSetUserIdsLikedThis()
             .add(user.getId());
 
-        update(film);
+        filmStorage.saveLinkedFilmData(film);
     }
 
     @LogMethodResult
@@ -69,7 +71,7 @@ public class FilmService {
         film.getSetUserIdsLikedThis()
             .remove(user.getId());
 
-        update(film);
+        filmStorage.saveLinkedFilmData(film);
     }
 
     @LogMethodResult
