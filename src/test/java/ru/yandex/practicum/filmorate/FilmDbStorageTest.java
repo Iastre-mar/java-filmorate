@@ -154,30 +154,21 @@ class FilmDbStorageTest {
     void getTopFilms_shouldReturnFilmsOrderedByLikes() {
         jdbcTemplate.update("DELETE FROM film_likes");
 
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (1, 101)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (1, 102)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (2, 103)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (2, 104)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (2, 105)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (1, 101)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (1, 102)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (2, 103)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (2, 104)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (2, 105)");
 
-        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L, 1L, 1895);
+        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L, null, null);
 
         assertThat(topFilms).hasSize(2);
 
-        Film firstFilm = topFilms.iterator()
-                                 .next();
+        Film firstFilm = topFilms.iterator().next();
         assertThat(firstFilm.getId()).isEqualTo(2L);
         assertThat(firstFilm.getSetUserIdsLikedThis()).hasSize(3);
 
-        Film secondFilm = topFilms.stream()
-                                  .skip(1)
-                                  .findFirst()
-                                  .get();
+        Film secondFilm = topFilms.stream().skip(1).findFirst().get();
         assertThat(secondFilm.getId()).isEqualTo(1L);
         assertThat(secondFilm.getSetUserIdsLikedThis()).hasSize(2);
     }
