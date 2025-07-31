@@ -17,10 +17,7 @@ import ru.yandex.practicum.filmorate.storage.mapper.RatingRowMapper;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -152,32 +149,34 @@ class FilmDbStorageTest {
 
     @Test
     void getTopFilms_shouldReturnFilmsOrderedByLikes() {
+
         jdbcTemplate.update("DELETE FROM film_likes");
+        jdbcTemplate.update("DELETE FROM films");
+        jdbcTemplate.update("DELETE FROM users");
 
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (1, 101)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (1, 102)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (2, 103)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (2, 104)");
-        jdbcTemplate.update(
-                "INSERT INTO film_likes (film_id, user_id) VALUES (2, 105)");
+        jdbcTemplate.update("INSERT INTO users (id, login, email, name, birthday) VALUES " +
+                "(101, 'user101', 'user101@example.com', 'User 101', '1990-01-01'), " +
+                "(102, 'user102', 'user102@example.com', 'User 102', '1995-05-15'), " +
+                "(103, 'user103', 'user103@example.com', 'User 103', '2000-10-20'), " +
+                "(104, 'user104', 'user104@example.com', 'User 104', '1985-03-25'), " +
+                "(105, 'user105', 'user105@example.com', 'User 105', '1999-12-31')");
 
-        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L);
+        jdbcTemplate.update("INSERT INTO films (id, name, description, release_date, duration, rating_id) VALUES " +
+                "(1, 'Film 1', 'Description 1', '2020-01-01', 120, 3), " +
+                "(2, 'Film 2', 'Description 2', '2021-01-01', 90, 2)");
+
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (2, 101), (2, 102), (2, 103)");
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES (1, 104), (1, 105)");
+
+        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L, null, null);
 
         assertThat(topFilms).hasSize(2);
-
-        Film firstFilm = topFilms.iterator()
-                                 .next();
+        Iterator<Film> iterator = topFilms.iterator();
+        Film firstFilm = iterator.next();
         assertThat(firstFilm.getId()).isEqualTo(2L);
         assertThat(firstFilm.getSetUserIdsLikedThis()).hasSize(3);
 
-        Film secondFilm = topFilms.stream()
-                                  .skip(1)
-                                  .findFirst()
-                                  .get();
+        Film secondFilm = iterator.next();
         assertThat(secondFilm.getId()).isEqualTo(1L);
         assertThat(secondFilm.getSetUserIdsLikedThis()).hasSize(2);
     }
@@ -205,5 +204,45 @@ class FilmDbStorageTest {
                                 .getGenres()).extracting(Genre::getId)
                                              .containsExactlyInAnyOrder(1L,
                                                                         2L);
+    }
+
+    @Test
+    void getTopFilmsByGenreAndYear() {
+
+        jdbcTemplate.update("DELETE FROM film_likes");
+        jdbcTemplate.update("DELETE FROM film_genres");
+        jdbcTemplate.update("DELETE FROM films");
+        jdbcTemplate.update("DELETE FROM users");
+
+        jdbcTemplate.update("INSERT INTO users (id, login, email, name, birthday) VALUES " +
+                "(1, 'user1', 'user1@example.com', 'User One', '1990-01-01'), " +
+                "(2, 'user2', 'user2@example.com', 'User Two', '1990-01-02'), " +
+                "(3, 'user3', 'user3@example.com', 'User Three', '1990-01-03'), " +
+                "(4, 'user4', 'user4@example.com', 'User Four', '1990-01-04'), " +
+                "(5, 'user5', 'user5@example.com', 'User Five', '1990-01-05'), " +
+                "(6, 'user6', 'user6@example.com', 'User Six', '1990-01-06')");
+
+        jdbcTemplate.update("INSERT INTO films (id, name, description, release_date, duration, rating_id) VALUES " +
+                "(1, 'Film 1', 'Description 1', '2020-01-01', 120, 1), " +
+                "(2, 'Film 2', 'Description 2', '2021-01-01', 90, 1), " +
+                "(3, 'Film 3', 'Description 3', '2021-01-01', 150, 1)");
+
+        jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES " +
+                "(1, 1), (2, 1), (3, 1)");
+
+        jdbcTemplate.update("INSERT INTO film_likes (film_id, user_id) VALUES " +
+                "(3, 4), (3, 5), (3, 6), (1, 1), (1, 2), (2, 3)");
+
+        Collection<Film> topFilms = filmDbStorage.getTopFilms(2L, 1L, 2021);
+
+        assertThat(topFilms).hasSize(2);
+        Iterator<Film> iterator = topFilms.iterator();
+        Film firstFilm = iterator.next();
+        assertThat(firstFilm.getId()).isEqualTo(3L);
+        assertThat(firstFilm.getSetUserIdsLikedThis()).hasSize(3);
+
+        Film secondFilm = iterator.next();
+        assertThat(secondFilm.getId()).isEqualTo(2L);
+        assertThat(secondFilm.getSetUserIdsLikedThis()).hasSize(1);
     }
 }
