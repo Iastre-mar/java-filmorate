@@ -53,6 +53,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Collections.emptyList();
     }
 
+    public void saveLinkedFilmData(Film film){}
+
     private long generateId() {
         return id++;
     }
