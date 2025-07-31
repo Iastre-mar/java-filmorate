@@ -1,19 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.impl.inmemory;
 
-import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Repository
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
-    private long id = 1;
-
+    private final Map<Long, Rating> ratings = new HashMap<>();
 
     @Override
     public Collection<Film> getAll() {
@@ -27,33 +24,48 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film persist(Film film) {
-        film.setId(generateId());
         films.put(film.getId(), film);
         return film;
     }
 
     @Override
     public Optional<Film> update(Film film) {
-        return Optional.ofNullable(
-                films.computeIfPresent(film.getId(), (k, v) -> film));
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
+            return Optional.of(film);
+        }
+        return Optional.empty();
     }
-
 
     @Override
     public Collection<Film> getTopFilms(Long count) {
-        return films.values()
-                    .stream()
-                    .sorted((film1, film2) -> film2.getSetUserIdsLikedThis()
-                                                   .size() -
-                                              film1.getSetUserIdsLikedThis()
-                                                   .size())
-                    .limit(Math.max(0, count))
-                    .toList();
+        return films.values().stream()
+                .sorted((f1, f2) -> Long.compare(f2.getSetUserIdsLikedThis().size(), f1.getSetUserIdsLikedThis().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
-    private long generateId() {
-        return id++;
+    @Override
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        // Implement the logic to get common films
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Map<Long, Set<Long>> loadLikesForFilms(Set<Long> filmIds) {
+        // Implement the logic to load likes for films
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public Map<Long, List<Genre>> loadGenresForFilms(Set<Long> filmIds) {
+        // Implement the logic to load genres for films
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public Map<Long, Rating> loadRatingsByIds(Set<Long> ratingIds) {
+        return ratingIds.stream()
+                .collect(Collectors.toMap(id -> id, ratings::get));
     }
 }
-
-
