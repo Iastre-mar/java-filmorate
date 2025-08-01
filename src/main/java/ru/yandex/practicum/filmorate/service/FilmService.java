@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
@@ -82,7 +84,7 @@ public class FilmService {
     @LogMethodResult
     public void deleteFilm(Long id) {
         if (!filmStorage.get(id).isPresent()) {
-            throw new RuntimeException("Фильм с ID " + id + " не найден");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Фильм с ID %d не найден".formatted(id));
         }
         filmStorage.delete(id);
     }
