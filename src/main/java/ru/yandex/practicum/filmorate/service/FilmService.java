@@ -79,4 +79,13 @@ public class FilmService {
         return filmStorage.get(id);
     }
 
+    @LogMethodResult
+    public void deleteFilm(Long id) {
+        if (!filmStorage.get(id).isPresent()) {
+            throw new RuntimeException("Фильм с ID " + id + " не найден");
+        }
+        filmStorage.delete(id);
+    }
+
+
 }

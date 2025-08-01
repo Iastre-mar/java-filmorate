@@ -78,6 +78,14 @@ public class UserService {
 
     }
 
+    @LogMethodResult
+    public void deleteUser(Long id) {
+        if (!userStorage.get(id).isPresent()) {
+            throw new RuntimeException("Пользователь с ID %d не найден".formatted(id));
+        }
+        userStorage.delete(id); // Вызов нового метода
+    }
+
     private void checkIdsSanity(Long id, Long otherId) {
         if (id.equals(otherId)) {
             throw new RuntimeException("Id в запросе одинаковые");
