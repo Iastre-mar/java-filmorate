@@ -49,9 +49,8 @@ public class UserService {
 
         User user = getUser(id).get();
         User otherUser = getUser(friendId).get();
-        if (!addToFriends(user, otherUser)) {
-            throw new RuntimeException("Не удалось добавить в друзья");
-        }
+
+        addToFriends(user, otherUser);
 
         updateUser(user);
         updateUser(otherUser);
@@ -74,13 +73,23 @@ public class UserService {
         checkIdsSanity(id, otherId);
 
         return getFriendsIntersection(userStorage.getFriends(id),
-                                      userStorage.getFriends(otherId));
+                userStorage.getFriends(otherId));
+    }
 
+    @LogMethodResult
+    public void deleteUser(Long id) {
+        if (!userStorage.get(id)
+                .isPresent()) {
+            throw new RuntimeException(
+                    "Пользователь с ID %d не найден".formatted(id));
+        }
+        userStorage.delete(id); // Вызов нового метода
     }
 
     private void checkIdsSanity(Long id, Long otherId) {
         if (id.equals(otherId)) {
-            throw new RuntimeException("Id в запросе одинаковые");
+            throw new IllegalArgumentException(
+                    "Нельзя добавлять самого себя в друзья");
         }
     }
 
@@ -95,7 +104,7 @@ public class UserService {
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
         user.getFriendships()
-            .add(userFriendship);
+                .add(userFriendship);
 
         return true;
     }
@@ -106,9 +115,9 @@ public class UserService {
 
     private boolean isFriendWith(User user, User otherUser) {
         return user.getFriendships()
-                   .stream()
-                   .anyMatch(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .stream()
+                .anyMatch(f -> f.getFriendId()
+                        .equals(otherUser.getId()));
     }
 
     private boolean removeFromFriends(User user, User otherUser) {
@@ -117,15 +126,15 @@ public class UserService {
 
     private boolean removeFriend(User user, User otherUser) {
         return user.getFriendships()
-                   .removeIf(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .removeIf(f -> f.getFriendId()
+                        .equals(otherUser.getId()));
     }
 
     private Collection<User> getFriendsIntersection(Collection<User> userFriends,
                                                     Collection<User> otherUserFriends
     ) {
         return userFriends.stream()
-                          .filter(otherUserFriends::contains)
-                          .collect(Collectors.toSet());
+                .filter(otherUserFriends::contains)
+                .collect(Collectors.toSet());
     }
 }

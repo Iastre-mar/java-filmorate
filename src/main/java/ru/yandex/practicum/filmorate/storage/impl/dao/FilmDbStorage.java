@@ -108,6 +108,17 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    @Override
+    public void delete(Long id) {
+        // Проверка существования фильма
+        if (!get(id).isPresent()) {
+            throw new FilmNotFoundException("Фильм с ID %d не найден".formatted(id));
+        }
+
+        String deleteFilmSql = "DELETE FROM films WHERE id = ?";
+        jdbcTemplate.update(deleteFilmSql, id);
+    }
+
     private void loadLinkedDataForBatch(List<Film> films) {
 
         Map<Long, Film> filmMap = films.stream()

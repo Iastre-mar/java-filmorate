@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.logger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.FilmorateNotFoundException;
 
 import java.util.HashMap;
@@ -24,28 +22,40 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult()
-          .getFieldErrors()
-          .forEach(error -> {
-              String fieldName = error.getField();
-              String errorMessage = error.getDefaultMessage();
-              errors.put(fieldName, errorMessage);
+                .getFieldErrors()
+                .forEach(error -> {
+                    String fieldName = error.getField();
+                    String errorMessage = error.getDefaultMessage();
+                    errors.put(fieldName, errorMessage);
 
-              log.error("Ошибка валидации поля '{}': {}", fieldName,
-                        errorMessage);
-          });
+                    log.error("Ошибка валидации поля '{}': {}", fieldName,
+                            errorMessage);
+                });
 
         return errors;
     }
 
-    @ExceptionHandler({
-            NoSuchElementException.class,
-            NullPointerException.class,
-            FilmorateNotFoundException.class
-
-    })
+    @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNoSuchElementException(RuntimeException ex
-    ) {
+    public Map<String, String> handleNoSuchElement(NoSuchElementException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNullPointer(NullPointerException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(FilmorateNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleFilmorateNotFound(FilmorateNotFoundException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return Map.of("error", ex.getMessage());
     }
 

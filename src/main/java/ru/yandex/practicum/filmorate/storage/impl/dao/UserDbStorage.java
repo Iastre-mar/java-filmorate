@@ -96,6 +96,13 @@ public class UserDbStorage implements UserStorage {
         return Optional.of(user);
     }
 
+    @Override
+    public void delete(Long id) {
+
+        String deleteUserSql = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(deleteUserSql, id);
+    }
+
     private void saveFriendships(User user) {
         String sql = "INSERT INTO friendships (user_id, friend_id) VALUES (?, ?)";
         List<Object[]> batchArgs = new ArrayList<>();
