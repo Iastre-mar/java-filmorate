@@ -88,7 +88,7 @@ public class UserService {
 
     private void checkIdsSanity(Long id, Long otherId) {
         if (id.equals(otherId)) {
-            throw new RuntimeException("Id в запросе одинаковые");
+            throw new IllegalArgumentException("Нельзя добавлять самого себя в друзья");
         }
     }
 

@@ -98,12 +98,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void delete(Long id) {
-        if (!get(id).isPresent()) {
-            throw new RuntimeException("Пользователь с ID %d не найден".formatted(id));
-        }
-
-        // Удаление связанных данных (друзья, лайки и т.д.)
-        String deleteFriendsSql = "DELETE FROM friends WHERE user_id = ? OR friend_id = ?";
+        String deleteFriendsSql = "DELETE FROM friendships WHERE user_id = ? OR friend_id = ?";
         jdbcTemplate.update(deleteFriendsSql, id, id);
 
         String deleteUserSql = "DELETE FROM users WHERE id = ?";
