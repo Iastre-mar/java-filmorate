@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,25 +17,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    @Qualifier("userDbStorage") private final UserStorage userStorage;
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
+    private final EventService eventService;
 
     @LogMethodResult
     public Collection<User> getAll() {
+
         return userStorage.getAll();
     }
 
     @LogMethodResult
     public User createUser(User user) {
+
         return userStorage.persist(user);
     }
 
     @LogMethodResult
     public Optional<User> updateUser(User user) {
+
         return userStorage.update(user);
     }
 
     @LogMethodResult
     public Optional<User> getUser(Long id) {
+
         return userStorage.get(id);
     }
 
@@ -55,6 +63,8 @@ public class UserService {
 
         updateUser(user);
         updateUser(otherUser);
+
+        addFriendEvent(id, friendId, Event.Operation.ADD);
     }
 
     @LogMethodResult
@@ -67,6 +77,8 @@ public class UserService {
 
         updateUser(user);
         updateUser(otherUser);
+
+        addFriendEvent(id, friendId, Event.Operation.REMOVE);
     }
 
     @LogMethodResult
@@ -74,7 +86,7 @@ public class UserService {
         checkIdsSanity(id, otherId);
 
         return getFriendsIntersection(userStorage.getFriends(id),
-                                      userStorage.getFriends(otherId));
+                userStorage.getFriends(otherId));
 
     }
 
@@ -94,8 +106,7 @@ public class UserService {
         Friendship userFriendship = new Friendship();
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
-        user.getFriendships()
-            .add(userFriendship);
+        user.getFriendships().add(userFriendship);
 
         return true;
     }
@@ -106,9 +117,9 @@ public class UserService {
 
     private boolean isFriendWith(User user, User otherUser) {
         return user.getFriendships()
-                   .stream()
-                   .anyMatch(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .stream()
+                .anyMatch(f -> f.getFriendId()
+                        .equals(otherUser.getId()));
     }
 
     private boolean removeFromFriends(User user, User otherUser) {
@@ -117,15 +128,25 @@ public class UserService {
 
     private boolean removeFriend(User user, User otherUser) {
         return user.getFriendships()
-                   .removeIf(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .removeIf(f -> f.getFriendId()
+                        .equals(otherUser.getId()));
     }
 
     private Collection<User> getFriendsIntersection(Collection<User> userFriends,
                                                     Collection<User> otherUserFriends
     ) {
         return userFriends.stream()
-                          .filter(otherUserFriends::contains)
-                          .collect(Collectors.toSet());
+                .filter(otherUserFriends::contains)
+                .collect(Collectors.toSet());
+    }
+
+    private void addFriendEvent(Long userId, Long friendId, Event.Operation operation) {
+        Event event = new Event();
+        event.setUserId(userId);
+        event.setEntityId(friendId);
+        event.setEventType(Event.EventType.FRIEND);
+        event.setOperation(operation);
+        event.setTimestamp(Instant.now());
+        eventService.addEvent(event);
     }
 }
