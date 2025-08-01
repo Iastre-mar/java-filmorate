@@ -49,9 +49,8 @@ public class UserService {
 
         User user = getUser(id).get();
         User otherUser = getUser(friendId).get();
-        if (!addToFriends(user, otherUser)) {
-            throw new RuntimeException("Не удалось добавить в друзья");
-        }
+
+        addToFriends(user, otherUser);
 
         updateUser(user);
         updateUser(otherUser);
@@ -79,15 +78,18 @@ public class UserService {
 
     @LogMethodResult
     public void deleteUser(Long id) {
-        if (!userStorage.get(id).isPresent()) {
-            throw new RuntimeException("Пользователь с ID %d не найден".formatted(id));
+        if (!userStorage.get(id)
+                .isPresent()) {
+            throw new RuntimeException(
+                    "Пользователь с ID %d не найден".formatted(id));
         }
         userStorage.delete(id); // Вызов нового метода
     }
 
     private void checkIdsSanity(Long id, Long otherId) {
         if (id.equals(otherId)) {
-            throw new IllegalArgumentException("Нельзя добавлять самого себя в друзья");
+            throw new IllegalArgumentException(
+                    "Нельзя добавлять самого себя в друзья");
         }
     }
 
