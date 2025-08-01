@@ -39,7 +39,7 @@ public class UserService {
 
     @LogMethodResult
     public Collection<User> getFriends(Long id) {
-        getUser(id);
+        getUser(id).orElseThrow(() -> new IllegalArgumentException("Пользователь с ID " + id + " не найден"));
         return userStorage.getFriends(id);
     }
 
@@ -47,8 +47,9 @@ public class UserService {
     public void addFriend(Long id, Long friendId) {
         checkIdsSanity(id, friendId);
 
-        User user = getUser(id).get();
-        User otherUser = getUser(friendId).get();
+        User user = getUser(id).orElseThrow(() -> new IllegalArgumentException("Пользователь с ID " + id + " не найден"));
+        User otherUser = getUser(friendId).orElseThrow(() -> new IllegalArgumentException("Пользователь с ID " + friendId + " не найден"));
+
         if (!addToFriends(user, otherUser)) {
             throw new RuntimeException("Не удалось добавить в друзья");
         }
@@ -60,8 +61,8 @@ public class UserService {
     @LogMethodResult
     public void removeFriend(Long id, Long friendId) {
         checkIdsSanity(id, friendId);
-        User user = getUser(id).get();
-        User otherUser = getUser(friendId).get();
+        User user = getUser(id).orElseThrow(() -> new IllegalArgumentException("Пользователь с ID " + id + " не найден"));
+        User otherUser = getUser(friendId).orElseThrow(() -> new IllegalArgumentException("Пользователь с ID " + friendId + " не найден"));
 
         removeFromFriends(user, otherUser);
 
@@ -74,14 +75,13 @@ public class UserService {
         checkIdsSanity(id, otherId);
 
         return getFriendsIntersection(userStorage.getFriends(id),
-                                      userStorage.getFriends(otherId));
-
+                userStorage.getFriends(otherId));
     }
 
     @LogMethodResult
     public void deleteUser(Long id) {
         if (!userStorage.get(id).isPresent()) {
-            throw new RuntimeException("Пользователь с ID %d не найден".formatted(id));
+            throw new IllegalArgumentException("Пользователь с ID " + id + " не найден");
         }
         userStorage.delete(id); // Вызов нового метода
     }
@@ -102,8 +102,7 @@ public class UserService {
         Friendship userFriendship = new Friendship();
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
-        user.getFriendships()
-            .add(userFriendship);
+        user.getFriendships().add(userFriendship);
 
         return true;
     }
@@ -114,9 +113,8 @@ public class UserService {
 
     private boolean isFriendWith(User user, User otherUser) {
         return user.getFriendships()
-                   .stream()
-                   .anyMatch(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .stream()
+                .anyMatch(f -> f.getFriendId().equals(otherUser.getId()));
     }
 
     private boolean removeFromFriends(User user, User otherUser) {
@@ -125,15 +123,13 @@ public class UserService {
 
     private boolean removeFriend(User user, User otherUser) {
         return user.getFriendships()
-                   .removeIf(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .removeIf(f -> f.getFriendId().equals(otherUser.getId()));
     }
 
     private Collection<User> getFriendsIntersection(Collection<User> userFriends,
-                                                    Collection<User> otherUserFriends
-    ) {
+                                                    Collection<User> otherUserFriends) {
         return userFriends.stream()
-                          .filter(otherUserFriends::contains)
-                          .collect(Collectors.toSet());
+                .filter(otherUserFriends::contains)
+                .collect(Collectors.toSet());
     }
 }
