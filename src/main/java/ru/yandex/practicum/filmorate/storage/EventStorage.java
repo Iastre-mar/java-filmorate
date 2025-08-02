@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface EventStorage {
     List<Event> getEventsByUserId(Long userId);
+
     Event addEvent(Event event);
+
     List<Event> getAllEvents();
 }
