@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -34,11 +33,11 @@ public class FilmService {
     public Film add(Film film) {
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
         ratingService.getRatingOrThrow(film.getRating()
-                                           .getId());
+                .getId());
         filmStorage.persist(film);
 
         Rating fullRating = ratingService.getRatingOrThrow(film.getRating()
-                                                               .getId());
+                .getId());
         film.setRating(fullRating);
         return film;
     }
@@ -54,10 +53,10 @@ public class FilmService {
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                               .get();
+                .get();
 
         film.getSetUserIdsLikedThis()
-            .add(user.getId());
+                .add(user.getId());
 
         update(film);
 
@@ -68,9 +67,9 @@ public class FilmService {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                               .get();
+                .get();
         film.getSetUserIdsLikedThis()
-            .remove(user.getId());
+                .remove(user.getId());
 
         update(film);
 

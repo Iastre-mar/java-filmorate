@@ -22,30 +22,33 @@ public class EventDbStorage implements EventStorage {
 
     @Override
     public List<Event> getEventsByUserId(Long userId) {
-        String sql = "SELECT * FROM events WHERE user_id = ? ORDER BY timestamp DESC";
+        String sql = "SELECT * FROM events WHERE user_id = ? ORDER BY event_id";
         return jdbcTemplate.query(sql, new EventRowMapper(), userId);
     }
 
     @Override
     public Event addEvent(Event event) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(
-                jdbcTemplate).withTableName("events")
-                             .usingGeneratedKeyColumns("event_id");
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("events")
+                .usingGeneratedKeyColumns("event_id");
 
         Map<String, Object> values = new HashMap<>();
         values.put("user_id", event.getUserId());
         values.put("entity_id", event.getEntityId());
-        values.put("timestamp", event.getTimestamp()
-                                     .toEpochMilli());
-        values.put("event_type", event.getEventType()
-                                      .name());
-        values.put("operation", event.getOperation()
-                                     .name());
+        values.put("timestamp", event.getTimestamp().toEpochMilli());
+        values.put("event_type", event.getEventType().name());
+        values.put("operation", event.getOperation().name());
 
-        Long eventId = simpleJdbcInsert.executeAndReturnKey(values)
-                                       .longValue();
+        Long eventId = simpleJdbcInsert.executeAndReturnKey(values).longValue();
         event.setEventId(eventId);
+
         return event;
+    }
+
+    @Override
+    public List<Event> getAllEvents() {
+        String sql = "SELECT * FROM events ORDER BY event_id";
+        return jdbcTemplate.query(sql, new EventRowMapper());
     }
 
     private static class EventRowMapper implements RowMapper<Event> {
@@ -56,10 +59,8 @@ public class EventDbStorage implements EventStorage {
             event.setUserId(rs.getLong("user_id"));
             event.setEntityId(rs.getLong("entity_id"));
             event.setTimestamp(Instant.ofEpochMilli(rs.getLong("timestamp")));
-            event.setEventType(
-                    Event.EventType.valueOf(rs.getString("event_type")));
-            event.setOperation(
-                    Event.Operation.valueOf(rs.getString("operation")));
+            event.setEventType(Event.EventType.valueOf(rs.getString("event_type")));
+            event.setOperation(Event.Operation.valueOf(rs.getString("operation")));
             return event;
         }
     }

@@ -18,6 +18,9 @@ public class EventController {
 
     @GetMapping("/{id}/feed")
     public List<Event> getFeed(@PathVariable Long id) {
-        return eventService.getEventsByUserId(id);
+        List<Event> events = eventService.getEventsByUserId(id);
+        System.out.println("Returning events for user " + id + ": " + events);
+
+        return events;
     }
 }
