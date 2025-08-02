@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.model.Event;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 
 public class EventRowMapper implements RowMapper<Event> {
     @Override
