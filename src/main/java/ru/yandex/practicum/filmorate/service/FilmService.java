@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -20,9 +22,11 @@ public class FilmService {
     private final UserService userService;
     private final RatingService ratingService;
     private final GenreService genreService;
+    private final EventService eventService;
 
     @LogMethodResult
     public Collection<Film> getAll() {
+
         return filmStorage.getAll();
     }
 
@@ -56,6 +60,8 @@ public class FilmService {
             .add(user.getId());
 
         update(film);
+
+        addLikeEvent(userId, filmId, Event.Operation.ADD);
     }
 
     @LogMethodResult
@@ -67,16 +73,43 @@ public class FilmService {
             .remove(user.getId());
 
         update(film);
+
+        addLikeEvent(userId, filmId, Event.Operation.REMOVE);
     }
 
     @LogMethodResult
-    public Collection<Film> getTopFilms(Long count) {
-        return filmStorage.getTopFilms(count);
+    public Collection<Film> getTopFilmsByGenreAndYear(Long count,
+                                                      Long genreId,
+                                                      Integer year
+    ) {
+        return filmStorage.getTopFilms(count, genreId, year);
+    }
+
+    @LogMethodResult
+    public Collection<Film> getTopFilms(Long count,
+                                        Long genreId,
+                                        Integer year
+    ) {
+        return filmStorage.getTopFilms(count, genreId, year);
     }
 
     @LogMethodResult
     public Optional<Film> getFilmByIdOrThrow(Long id) {
+
         return filmStorage.get(id);
+    }
+
+    private void addLikeEvent(Long userId,
+                              Long filmId,
+                              Event.Operation operation
+    ) {
+        Event event = new Event();
+        event.setUserId(userId);
+        event.setEntityId(filmId);
+        event.setEventType(Event.EventType.LIKE);
+        event.setOperation(operation);
+        event.setTimestamp(Instant.now());
+        eventService.addEvent(event);
     }
 
 }

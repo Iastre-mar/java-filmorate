@@ -95,15 +95,23 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getTopFilms(Long count) {
+    public Collection<Film> getTopFilms(Long count,
+                                        Long genreId,
+                                        Integer year
+    ) {
         String sql = "SELECT f.*, COUNT(fl.user_id) AS likes_count " +
                      "FROM films f " +
                      "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                     "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                     "WHERE (?1 IS NULL OR fg.genre_id = ?1) " +
+                     "AND (?2 IS NULL OR YEAR(f.release_date) = ?2) " +
                      "GROUP BY f.id " +
                      "ORDER BY likes_count DESC " +
-                     "LIMIT ?";
+                     "LIMIT ?3";
 
-        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, count);
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, genreId,
+                                              year,
+                                              count != null ? count : 10);
         loadLinkedDataForBatch(films);
         return films;
     }
@@ -207,8 +215,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Object[]> batchArgs = likes.stream()
                                         .map(userId -> new Object[]{
-                                                film.getId(),
-                                                userId
+                                                film.getId(), userId
                                         })
                                         .collect(Collectors.toList());
 
@@ -233,8 +240,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Object[]> batchArgs = uniqueGenreIds.stream()
                                                  .map(genreId -> new Object[]{
-                                                         film.getId(),
-                                                         genreId
+                                                         film.getId(), genreId
                                                  })
                                                  .toList();
 
