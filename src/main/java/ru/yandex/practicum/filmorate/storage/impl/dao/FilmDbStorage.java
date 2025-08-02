@@ -216,8 +216,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Object[]> batchArgs = likes.stream()
                                         .map(userId -> new Object[]{
-                                                film.getId(),
-                                                userId
+                                                film.getId(), userId
                                         })
                                         .collect(Collectors.toList());
 
@@ -242,8 +241,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Object[]> batchArgs = uniqueGenreIds.stream()
                                                  .map(genreId -> new Object[]{
-                                                         film.getId(),
-                                                         genreId
+                                                         film.getId(), genreId
                                                  })
                                                  .toList();
 
