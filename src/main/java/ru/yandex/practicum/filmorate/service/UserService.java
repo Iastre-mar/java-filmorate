@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    @Qualifier("userDbStorage")
-    private final UserStorage userStorage;
+    @Qualifier("userDbStorage") private final UserStorage userStorage;
     private final EventService eventService;
 
     @LogMethodResult
@@ -86,7 +85,7 @@ public class UserService {
         checkIdsSanity(id, otherId);
 
         return getFriendsIntersection(userStorage.getFriends(id),
-                userStorage.getFriends(otherId));
+                                      userStorage.getFriends(otherId));
 
     }
 
@@ -106,7 +105,8 @@ public class UserService {
         Friendship userFriendship = new Friendship();
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
-        user.getFriendships().add(userFriendship);
+        user.getFriendships()
+            .add(userFriendship);
 
         return true;
     }
@@ -117,9 +117,9 @@ public class UserService {
 
     private boolean isFriendWith(User user, User otherUser) {
         return user.getFriendships()
-                .stream()
-                .anyMatch(f -> f.getFriendId()
-                        .equals(otherUser.getId()));
+                   .stream()
+                   .anyMatch(f -> f.getFriendId()
+                                   .equals(otherUser.getId()));
     }
 
     private boolean removeFromFriends(User user, User otherUser) {
@@ -128,19 +128,22 @@ public class UserService {
 
     private boolean removeFriend(User user, User otherUser) {
         return user.getFriendships()
-                .removeIf(f -> f.getFriendId()
-                        .equals(otherUser.getId()));
+                   .removeIf(f -> f.getFriendId()
+                                   .equals(otherUser.getId()));
     }
 
     private Collection<User> getFriendsIntersection(Collection<User> userFriends,
                                                     Collection<User> otherUserFriends
     ) {
         return userFriends.stream()
-                .filter(otherUserFriends::contains)
-                .collect(Collectors.toSet());
+                          .filter(otherUserFriends::contains)
+                          .collect(Collectors.toSet());
     }
 
-    private void addFriendEvent(Long userId, Long friendId, Event.Operation operation) {
+    private void addFriendEvent(Long userId,
+                                Long friendId,
+                                Event.Operation operation
+    ) {
         Event event = new Event();
         event.setUserId(userId);
         event.setEntityId(friendId);

@@ -18,8 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-    @Qualifier("filmDbStorage")
-    private final FilmStorage filmStorage;
+    @Qualifier("filmDbStorage") private final FilmStorage filmStorage;
     private final UserService userService;
     private final RatingService ratingService;
     private final GenreService genreService;
@@ -79,12 +78,18 @@ public class FilmService {
     }
 
     @LogMethodResult
-    public Collection<Film> getTopFilmsByGenreAndYear(Long count, Long genreId, Integer year) {
+    public Collection<Film> getTopFilmsByGenreAndYear(Long count,
+                                                      Long genreId,
+                                                      Integer year
+    ) {
         return filmStorage.getTopFilms(count, genreId, year);
     }
 
     @LogMethodResult
-    public Collection<Film> getTopFilms(Long count, Long genreId, Integer year) {
+    public Collection<Film> getTopFilms(Long count,
+                                        Long genreId,
+                                        Integer year
+    ) {
         return filmStorage.getTopFilms(count, genreId, year);
     }
 
@@ -94,7 +99,10 @@ public class FilmService {
         return filmStorage.get(id);
     }
 
-    private void addLikeEvent(Long userId, Long filmId, Event.Operation operation) {
+    private void addLikeEvent(Long userId,
+                              Long filmId,
+                              Event.Operation operation
+    ) {
         Event event = new Event();
         event.setUserId(userId);
         event.setEntityId(filmId);
