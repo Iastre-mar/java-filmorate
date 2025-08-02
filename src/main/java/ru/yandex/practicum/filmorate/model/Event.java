@@ -11,7 +11,7 @@ public class Event {
     private Long entityId;
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Instant timestamp;
+    private long timestamp;
 
     private EventType eventType;
     private Operation operation;

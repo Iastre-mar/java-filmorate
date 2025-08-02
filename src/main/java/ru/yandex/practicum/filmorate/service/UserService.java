@@ -149,7 +149,7 @@ public class UserService {
         event.setEntityId(friendId);
         event.setEventType(Event.EventType.FRIEND);
         event.setOperation(operation);
-        event.setTimestamp(Instant.now());
+        event.setTimestamp(System.currentTimeMillis());
         eventService.addEvent(event);
     }
 }

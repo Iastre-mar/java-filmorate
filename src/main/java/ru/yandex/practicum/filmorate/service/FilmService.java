@@ -107,7 +107,7 @@ public class FilmService {
         event.setEntityId(filmId);
         event.setEventType(Event.EventType.LIKE);
         event.setOperation(operation);
-        event.setTimestamp(Instant.now());
+        event.setTimestamp(System.currentTimeMillis());
         eventService.addEvent(event);
     }
 

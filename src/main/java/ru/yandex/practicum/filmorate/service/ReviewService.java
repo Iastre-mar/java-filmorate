@@ -114,7 +114,7 @@ public class ReviewService {
         event.setEntityId(reviewId);
         event.setEventType(Event.EventType.REVIEW);
         event.setOperation(operation);
-        event.setTimestamp(Instant.now());
+        event.setTimestamp(System.currentTimeMillis());
         eventService.addEvent(event);
     }
 }

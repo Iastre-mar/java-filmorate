@@ -35,7 +35,7 @@ public class EventDbStorage implements EventStorage {
         Map<String, Object> values = new HashMap<>();
         values.put("user_id", event.getUserId());
         values.put("entity_id", event.getEntityId());
-        values.put("timestamp", event.getTimestamp().toEpochMilli());
+        values.put("timestamp", event.getTimestamp());
         values.put("event_type", event.getEventType().name());
         values.put("operation", event.getOperation().name());
 
@@ -58,7 +58,7 @@ public class EventDbStorage implements EventStorage {
             event.setEventId(rs.getLong("event_id"));
             event.setUserId(rs.getLong("user_id"));
             event.setEntityId(rs.getLong("entity_id"));
-            event.setTimestamp(Instant.ofEpochMilli(rs.getLong("timestamp")));
+            event.setTimestamp(System.currentTimeMillis());
             event.setEventType(Event.EventType.valueOf(rs.getString("event_type")));
             event.setOperation(Event.Operation.valueOf(rs.getString("operation")));
             return event;
