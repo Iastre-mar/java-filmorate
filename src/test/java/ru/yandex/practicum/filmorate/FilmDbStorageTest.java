@@ -18,6 +18,8 @@ import ru.yandex.practicum.filmorate.storage.mapper.RatingRowMapper;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -197,8 +199,8 @@ class FilmDbStorageTest {
         newFilm.setRating(rating);
 
         newFilm.setGenres(
-                Set.of(new Genre(1L, "Комедия"), new Genre(1L, "Комедия"),
-                        new Genre(2L, "Драма")));
+                Stream.of(new Genre(1L, "Комедия"), new Genre(1L, "Комедия"),
+                        new Genre(2L, "Драма")).collect(Collectors.toSet()));
 
         Film savedFilm = filmDbStorage.persist(newFilm);
 
