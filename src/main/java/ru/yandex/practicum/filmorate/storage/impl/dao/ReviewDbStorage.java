@@ -27,7 +27,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review persist(Review review) {
         String sql =
                 "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
-                "VALUES (?, ?, ?, ?, 0)";
+                "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -37,6 +37,7 @@ public class ReviewDbStorage implements ReviewStorage {
             ps.setBoolean(2, review.getIsPositive());
             ps.setLong(3, review.getUserId());
             ps.setLong(4, review.getFilmId());
+            ps.setLong(5, review.getUseful());
             return ps;
         }, keyHolder);
 
@@ -51,7 +52,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String sql = "UPDATE reviews SET content = ?, is_positive = ? WHERE id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(),
                             review.getReviewId());
-        return Optional.of(review);
+        return get(review.getReviewId());
     }
 
     @Override
@@ -64,7 +65,7 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Optional<Review> get(Long id) {
         String sql = "SELECT * FROM reviews WHERE id = ?";
-        Review review = null;
+        Review review;
         try {
             review = jdbcTemplate.queryForObject(sql, reviewRowMapper, id);
         } catch (EmptyResultDataAccessException e) {

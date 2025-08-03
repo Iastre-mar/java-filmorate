@@ -114,8 +114,7 @@ public class FilmService {
 
     @LogMethodResult
     public void deleteFilm(Long id) {
-        if (!filmStorage.get(id)
-                        .isPresent()) {
+        if (filmStorage.get(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                                               "Фильм с ID %d не найден".formatted(
                                                       id));
@@ -126,6 +125,7 @@ public class FilmService {
 
     @LogMethodResult
     public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
+        directorService.getDirectorByIdOrThrow(directorId);
         return filmStorage.getDirectorFilms(directorId, sortBy);
     }
 

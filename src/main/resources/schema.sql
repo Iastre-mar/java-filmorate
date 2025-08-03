@@ -1,3 +1,17 @@
+-- Предварительное удаление справочных таблиц
+DROP TABLE IF EXISTS film_genres CASCADE;
+DROP TABLE IF EXISTS film_likes CASCADE;
+DROP TABLE IF EXISTS film_directors CASCADE;
+DROP TABLE IF EXISTS friendships CASCADE;
+DROP TABLE IF EXISTS review_likes CASCADE;
+DROP TABLE IF EXISTS films CASCADE;
+DROP TABLE IF EXISTS ref_genre CASCADE;
+DROP TABLE IF EXISTS ref_rating CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS ref_director CASCADE;
+DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+
 -- Создание справочных таблиц
 CREATE TABLE IF NOT EXISTS ref_rating
 (

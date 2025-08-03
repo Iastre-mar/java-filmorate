@@ -186,7 +186,7 @@ public class FilmDbStorage implements FilmStorage {
                                    .collect(Collectors.toSet());
         Map<Long, Set<Long>> likesMap = loadLikesForFilms(filmIds);
 
-        Map<Long, List<Genre>> genresMap = loadGenresForFilms(filmIds);
+        Map<Long, Set<Genre>> genresMap = loadGenresForFilms(filmIds);
 
         Map<Long, List<Director>> directorsMap = loadDirectorsForFilms(
                 filmIds);
@@ -197,7 +197,7 @@ public class FilmDbStorage implements FilmStorage {
             film.setSetUserIdsLikedThis(
                     likesMap.getOrDefault(film.getId(), new HashSet<>()));
             film.setGenres(
-                    genresMap.getOrDefault(film.getId(), new ArrayList<>()));
+                    genresMap.getOrDefault(film.getId(), new HashSet<>()));
             film.setDirectors(directorsMap.getOrDefault(film.getId(),
                                                         new ArrayList<>()));
 
@@ -210,7 +210,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void delete(Long id) {
         // Проверка существования фильма
-        if (!get(id).isPresent()) {
+        if (get(id).isEmpty()) {
             throw new FilmNotFoundException(
                     "Фильм с ID %d не найден".formatted(id));
         }
@@ -250,9 +250,11 @@ public class FilmDbStorage implements FilmStorage {
                      "ORDER BY COUNT(fl.film_id) DESC;";
         List<Film> films = new ArrayList<>();
         if (!by.isEmpty()) {
+            String sqlDirector="";
+            String sqlTitle="";
             for (String sortType : by) {
                 if (sortType.equals("director")) {
-                    sql = "SELECT f.* " +
+                    sqlDirector = "SELECT f.* " +
                           "FROM films f " +
                           "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
                           "LEFT JOIN ref_director d ON fd.director_id = d.id " +
@@ -260,13 +262,17 @@ public class FilmDbStorage implements FilmStorage {
                           "GROUP BY f.id, d.id " +
                           "ORDER BY f.name;";
                 } else if (sortType.equals("title")) {
-                    sql = "SELECT * " +
+                    sqlTitle = "SELECT * " +
                           "FROM films " +
                           "WHERE name ILIKE ? " +
                           "ORDER BY name;";
                 }
-                films.addAll(jdbcTemplate.query(sql, filmRowMapper,
-                                                "%" + query + "%"));
+            }
+            if (!sqlDirector.isBlank()) {
+                films.addAll(jdbcTemplate.query(sqlDirector, filmRowMapper, "%" + query + "%"));
+            }
+            if (!sqlTitle.isBlank()) {
+                films.addAll(jdbcTemplate.query(sqlTitle, filmRowMapper, "%" + query + "%"));
             }
         } else {
             films.addAll(
@@ -293,7 +299,7 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    private Map<Long, List<Genre>> loadGenresForFilms(Set<Long> filmIds) {
+    private Map<Long, Set<Genre>> loadGenresForFilms(Set<Long> filmIds) {
         String sql = "SELECT fg.film_id, g.id, g.name " +
                      "FROM film_genres fg " +
                      "JOIN ref_genre g ON fg.genre_id = g.id " +
@@ -303,12 +309,12 @@ public class FilmDbStorage implements FilmStorage {
                                                               filmIds);
 
         return namedParameterJdbcTemplate.query(sql, params, rs -> {
-            Map<Long, List<Genre>> result = new HashMap<>();
+            Map<Long, Set<Genre>> result = new HashMap<>();
             while (rs.next()) {
                 Long filmId = rs.getLong("film_id");
                 Long genreId = rs.getLong("id");
                 String genreName = rs.getString("name");
-                result.computeIfAbsent(filmId, k -> new ArrayList<>())
+                result.computeIfAbsent(filmId, k -> new HashSet<>())
                       .add(new Genre(genreId, genreName));
             }
             return result;
@@ -392,7 +398,7 @@ public class FilmDbStorage implements FilmStorage {
     private void saveFilmGenres(Film film) {
         String sql = "MERGE INTO film_genres (film_id, genre_id) KEY (film_id, genre_id) VALUES (?, ?)";
 
-        List<Genre> genres = film.getGenres();
+        Set<Genre> genres = film.getGenres();
         if (genres == null || genres.isEmpty()) {
             return;
         }

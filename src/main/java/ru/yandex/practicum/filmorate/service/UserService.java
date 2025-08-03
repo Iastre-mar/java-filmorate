@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,9 @@ public class UserService {
 
     @LogMethodResult
     public User createUser(User user) {
-
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         return userStorage.persist(user);
     }
 
@@ -146,6 +149,11 @@ public class UserService {
         return userFriends.stream()
                           .filter(otherUserFriends::contains)
                           .collect(Collectors.toSet());
+    }
+
+    public List<Event> getEventsByUserId(Long userId) {
+        getUser(userId);
+        return eventService.getEventsByUserId(userId);
     }
 
     private void addFriendEvent(Long userId,

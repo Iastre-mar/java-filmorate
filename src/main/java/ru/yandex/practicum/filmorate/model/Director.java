@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class Director {
     private Long id;
-    @NotNull private String name;
+    @NotBlank
+    private String name;
 
 
     public Director(Long id, String name) {

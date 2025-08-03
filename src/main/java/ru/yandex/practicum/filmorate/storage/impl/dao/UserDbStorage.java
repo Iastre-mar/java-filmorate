@@ -40,7 +40,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Optional<User> get(Long id) {
-        User user = null;
+        User user;
         String sql = "SELECT * FROM users WHERE id = ?";
         try {
             user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
@@ -53,12 +53,12 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Set<User> getFriends(Long id) {
+    public List<User> getFriends(Long id) {
         String sql = "SELECT u.* FROM users u " +
                      "JOIN friendships f ON u.id = f.friend_id " +
                      "WHERE f.user_id = ?";
 
-        return new HashSet<>(jdbcTemplate.query(sql, userRowMapper, id));
+        return jdbcTemplate.query(sql, userRowMapper, id);
     }
 
     @Override
