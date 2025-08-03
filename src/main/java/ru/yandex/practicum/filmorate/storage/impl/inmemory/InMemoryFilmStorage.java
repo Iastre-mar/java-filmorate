@@ -106,6 +106,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Map<Long, Rating> loadRatingsByIds(Set<Long> ratingIds) {
         return ratingIds.stream()
-                .collect(Collectors.toMap(id -> id, ratings::get));
+                        .collect(Collectors.toMap(id -> id, ratings::get));
     }
 }

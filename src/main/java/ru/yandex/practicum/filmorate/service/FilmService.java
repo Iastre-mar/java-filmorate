@@ -5,15 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
-import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -61,7 +56,9 @@ public class FilmService {
     @LogMethodResult
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
-        User user = userService.getUser(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userService.getUser(userId)
+                               .orElseThrow(() -> new UserNotFoundException(
+                                       "User not found"));
 
         film.getSetUserIdsLikedThis()
             .add(user.getId());
@@ -73,8 +70,11 @@ public class FilmService {
     @LogMethodResult
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
-        User user = userService.getUser(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-        film.getSetUserIdsLikedThis().remove(user.getId());
+        User user = userService.getUser(userId)
+                               .orElseThrow(() -> new UserNotFoundException(
+                                       "User not found"));
+        film.getSetUserIdsLikedThis()
+            .remove(user.getId());
         addLikeEvent(userId, filmId, Event.Operation.REMOVE);
         filmStorage.saveLinkedFilmData(film);
     }
@@ -109,34 +109,49 @@ public class FilmService {
 
     @LogMethodResult
     public Collection<Film> getCommonFilms(Long userId, Long friendId) {
-        userService.getUser(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-        userService.getUser(friendId).orElseThrow(() -> new UserNotFoundException("Friend not found"));
+        userService.getUser(userId)
+                   .orElseThrow(
+                           () -> new UserNotFoundException("User not found"));
+        userService.getUser(friendId)
+                   .orElseThrow(() -> new UserNotFoundException(
+                           "Friend not found"));
 
-        List<Film> commonFilms = (List<Film>) filmStorage.getCommonFilms(userId, friendId);
+        List<Film> commonFilms = (List<Film>) filmStorage.getCommonFilms(
+                userId, friendId);
         loadLinkedDataForBatch(commonFilms);
         return commonFilms;
     }
 
     private void loadLinkedDataForBatch(List<Film> films) {
-        Set<Long> filmIds = films.stream().map(Film::getId).collect(Collectors.toSet());
+        Set<Long> filmIds = films.stream()
+                                 .map(Film::getId)
+                                 .collect(Collectors.toSet());
 
         Map<Long, Set<Long>> likesMap = filmStorage.loadLikesForFilms(filmIds);
-        Map<Long, List<Genre>> genresMap = filmStorage.loadGenresForFilms(filmIds);
+        Map<Long, List<Genre>> genresMap = filmStorage.loadGenresForFilms(
+                filmIds);
         Map<Long, Rating> ratingsMap = filmStorage.loadRatingsByIds(
-                films.stream().map(f -> f.getRating().getId()).collect(Collectors.toSet())
-        );
+                films.stream()
+                     .map(f -> f.getRating()
+                                .getId())
+                     .collect(Collectors.toSet()));
 
         for (Film film : films) {
-            film.setSetUserIdsLikedThis(likesMap.getOrDefault(film.getId(), new HashSet<>()));
-            film.setGenres(genresMap.getOrDefault(film.getId(), new ArrayList<>()));
-            film.setRating(ratingsMap.get(film.getRating().getId()));
+            film.setSetUserIdsLikedThis(
+                    likesMap.getOrDefault(film.getId(), new HashSet<>()));
+            film.setGenres(
+                    genresMap.getOrDefault(film.getId(), new ArrayList<>()));
+            film.setRating(ratingsMap.get(film.getRating()
+                                              .getId()));
         }
     }
 
     private void validateFilm(Film film) {
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
-        ratingService.getRatingOrThrow(film.getRating().getId());
+        ratingService.getRatingOrThrow(film.getRating()
+                                           .getId());
     }
+
     @LogMethodResult
     public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
         return filmStorage.getDirectorFilms(directorId, sortBy);

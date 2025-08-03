@@ -10,7 +10,9 @@ import java.time.Duration;
 public class DurationDeserializer extends JsonDeserializer<Duration> {
 
     @Override
-    public Duration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public Duration deserialize(JsonParser p,
+                                DeserializationContext ctxt
+    ) throws IOException {
         if (p.getValueAsString() == null) {
             return null;
         }
