@@ -77,6 +77,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Collections.emptyList();
     }
 
+    @Override
+    public Collection<Film> getFilmsSearch(String query, List<String> by) {
+        return Collections.emptyList();
+    }
+
     public void saveLinkedFilmData(Film film) {
     }
 

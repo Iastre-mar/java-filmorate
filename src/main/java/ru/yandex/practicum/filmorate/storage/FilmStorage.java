@@ -23,5 +23,7 @@ public interface FilmStorage {
 
     Collection<Film> getDirectorFilms(Long directorId, String sortBy);
 
+    Collection<Film> getFilmsSearch(String query, List<String> by);
+
     void saveLinkedFilmData(Film film);
 }

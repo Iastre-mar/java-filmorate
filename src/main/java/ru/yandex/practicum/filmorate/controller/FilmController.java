@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -77,5 +78,12 @@ public class FilmController {
             sortBy = "year";
         }
         return filmService.getDirectorFilms(directorId, sortBy);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> getFilmsSearch(@RequestParam String query,
+                                           @RequestParam List<String> by
+    ) {
+        return filmService.getFilmsSearch(query, by);
     }
 }

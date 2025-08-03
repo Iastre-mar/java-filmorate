@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -111,6 +112,11 @@ public class FilmService {
     @LogMethodResult
     public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
         return filmStorage.getDirectorFilms(directorId, sortBy);
+    }
+
+    @LogMethodResult
+    public Collection<Film> getFilmsSearch(String query, List<String> by) {
+        return filmStorage.getFilmsSearch(query, by);
     }
 
     private void addLikeEvent(Long userId,
