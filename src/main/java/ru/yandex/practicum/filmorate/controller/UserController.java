@@ -33,13 +33,13 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User user) {
         userService.getUser(user.getId());
         return userService.updateUser(user)
-                          .get();
+                .get();
     }
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
         return userService.getUser(id)
-                          .get();
+                .get();
     }
 
 

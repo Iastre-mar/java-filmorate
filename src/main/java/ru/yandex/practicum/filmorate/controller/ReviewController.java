@@ -27,7 +27,7 @@ public class ReviewController {
     @PutMapping
     public Review updateReview(@Valid @RequestBody Review review) {
         return reviewService.update(review)
-                            .get();
+                .get();
     }
 
     @GetMapping

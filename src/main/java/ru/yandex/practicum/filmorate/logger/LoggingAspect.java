@@ -15,7 +15,7 @@ public class LoggingAspect {
     public Object logMethodExecution(ProceedingJoinPoint joinPoint) throws
             Throwable {
         String methodName = joinPoint.getSignature()
-                                     .getName();
+                .getName();
         Object[] args = joinPoint.getArgs();
 
         log.info("Вызов метода: {} с аргументами: {}", methodName, args);
@@ -23,7 +23,7 @@ public class LoggingAspect {
         try {
             Object result = joinPoint.proceed();
             log.info("Метод {} успешно завершился. Результат: {}", methodName,
-                     result);
+                    result);
             return result;
         } catch (Exception e) {
             log.error("Ошибка в методе {}: {}", methodName, e.getMessage(), e);

@@ -51,9 +51,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     private Set<User> getSetOfFriends(User user) {
         return user.getFriendships()
-                   .stream()
-                   .map(f -> users.get(f.getFriendId()))
-                   .filter(Objects::nonNull)
-                   .collect(Collectors.toSet());
+                .stream()
+                .map(f -> users.get(f.getFriendId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 }

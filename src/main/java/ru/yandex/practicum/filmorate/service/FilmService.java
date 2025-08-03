@@ -19,7 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class FilmService {
-    @Qualifier("filmDbStorage") private final FilmStorage filmStorage;
+    @Qualifier("filmDbStorage")
+    private final FilmStorage filmStorage;
     private final UserService userService;
     private final RatingService ratingService;
     private final GenreService genreService;
@@ -38,11 +39,11 @@ public class FilmService {
         film.setDirectors(
                 directorService.getDirectorOrThrow(film.getDirectors()));
         ratingService.getRatingOrThrow(film.getRating()
-                                           .getId());
+                .getId());
         filmStorage.persist(film);
 
         Rating fullRating = ratingService.getRatingOrThrow(film.getRating()
-                                                               .getId());
+                .getId());
         film.setRating(fullRating);
         return film;
     }
@@ -60,10 +61,10 @@ public class FilmService {
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                               .get();
+                .get();
 
         film.getSetUserIdsLikedThis()
-            .add(user.getId());
+                .add(user.getId());
 
         filmStorage.saveLinkedFilmData(film);
 
@@ -74,9 +75,9 @@ public class FilmService {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                               .get();
+                .get();
         film.getSetUserIdsLikedThis()
-            .remove(user.getId());
+                .remove(user.getId());
 
         filmStorage.deleteLinkedFilmData(film);
         filmStorage.saveLinkedFilmData(film);
@@ -116,8 +117,8 @@ public class FilmService {
     public void deleteFilm(Long id) {
         if (filmStorage.get(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                              "Фильм с ID %d не найден".formatted(
-                                                      id));
+                    "Фильм с ID %d не найден".formatted(
+                            id));
         }
         filmStorage.delete(id);
     }

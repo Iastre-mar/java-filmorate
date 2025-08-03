@@ -27,12 +27,12 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review persist(Review review) {
         String sql =
                 "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                        "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql,
-                                                               Statement.RETURN_GENERATED_KEYS);
+                    Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, review.getContent());
             ps.setBoolean(2, review.getIsPositive());
             ps.setLong(3, review.getUserId());
@@ -42,7 +42,7 @@ public class ReviewDbStorage implements ReviewStorage {
         }, keyHolder);
 
         Long generatedId = Objects.requireNonNull(keyHolder.getKey())
-                                  .longValue();
+                .longValue();
         review.setReviewId(generatedId);
         return review;
     }
@@ -51,14 +51,14 @@ public class ReviewDbStorage implements ReviewStorage {
     public Optional<Review> update(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ? WHERE id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(),
-                            review.getReviewId());
+                review.getReviewId());
         return get(review.getReviewId());
     }
 
     @Override
     public void delete(Long id) {
         jdbcTemplate.update("DELETE FROM review_likes WHERE review_id = ?",
-                            id);
+                id);
         jdbcTemplate.update("DELETE FROM reviews WHERE id = ?", id);
     }
 
@@ -81,7 +81,7 @@ public class ReviewDbStorage implements ReviewStorage {
     ) {
         String sql = "SELECT * FROM reviews WHERE film_id = ? ORDER BY useful DESC LIMIT ?";
         return jdbcTemplate.query(sql, reviewRowMapper, filmId,
-                                  countOfReviews);
+                countOfReviews);
     }
 
     @Override

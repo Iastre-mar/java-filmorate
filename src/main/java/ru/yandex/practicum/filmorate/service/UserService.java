@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    @Qualifier("userDbStorage") private final UserStorage userStorage;
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
     private final EventService eventService;
 
     @LogMethodResult
@@ -86,13 +87,13 @@ public class UserService {
         checkIdsSanity(id, otherId);
 
         return getFriendsIntersection(userStorage.getFriends(id),
-                                      userStorage.getFriends(otherId));
+                userStorage.getFriends(otherId));
     }
 
     @LogMethodResult
     public void deleteUser(Long id) {
         if (!userStorage.get(id)
-                        .isPresent()) {
+                .isPresent()) {
             throw new RuntimeException(
                     "Пользователь с ID %d не найден".formatted(id));
         }
@@ -117,7 +118,7 @@ public class UserService {
         userFriendship.setUserId(user.getId());
         userFriendship.setFriendId(otherUser.getId());
         user.getFriendships()
-            .add(userFriendship);
+                .add(userFriendship);
 
         return true;
     }
@@ -128,9 +129,9 @@ public class UserService {
 
     private boolean isFriendWith(User user, User otherUser) {
         return user.getFriendships()
-                   .stream()
-                   .anyMatch(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .stream()
+                .anyMatch(f -> f.getFriendId()
+                        .equals(otherUser.getId()));
     }
 
     private boolean removeFromFriends(User user, User otherUser) {
@@ -139,16 +140,16 @@ public class UserService {
 
     private boolean removeFriend(User user, User otherUser) {
         return user.getFriendships()
-                   .removeIf(f -> f.getFriendId()
-                                   .equals(otherUser.getId()));
+                .removeIf(f -> f.getFriendId()
+                        .equals(otherUser.getId()));
     }
 
     private Collection<User> getFriendsIntersection(Collection<User> userFriends,
                                                     Collection<User> otherUserFriends
     ) {
         return userFriends.stream()
-                          .filter(otherUserFriends::contains)
-                          .collect(Collectors.toSet());
+                .filter(otherUserFriends::contains)
+                .collect(Collectors.toSet());
     }
 
     public List<Event> getEventsByUserId(Long userId) {

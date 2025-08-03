@@ -22,8 +22,8 @@ public class ReviewService {
     @LogMethodResult
     public Review getReviewByIdOrThrow(Long id) {
         return reviewStorage.get(id)
-                            .orElseThrow(() -> new ReviewNotFoundException(
-                                    "Review not found with id: " + id));
+                .orElseThrow(() -> new ReviewNotFoundException(
+                        "Review not found with id: " + id));
     }
 
     @LogMethodResult
@@ -33,7 +33,7 @@ public class ReviewService {
         Review savedReview = reviewStorage.persist(review);
 
         addReviewEvent(savedReview.getUserId(), savedReview.getReviewId(),
-                       Event.Operation.ADD);
+                Event.Operation.ADD);
 
         return savedReview;
     }
@@ -46,8 +46,8 @@ public class ReviewService {
 
         if (updatedReview.isPresent()) {
             addReviewEvent(existingReview.getUserId(),
-                           existingReview.getReviewId(),
-                           Event.Operation.UPDATE);
+                    existingReview.getReviewId(),
+                    Event.Operation.UPDATE);
         }
 
         return updatedReview;
@@ -58,7 +58,7 @@ public class ReviewService {
         Review review = getReviewByIdOrThrow(id);
 
         addReviewEvent(review.getUserId(), review.getReviewId(),
-                       Event.Operation.REMOVE);
+                Event.Operation.REMOVE);
 
         reviewStorage.delete(id);
     }

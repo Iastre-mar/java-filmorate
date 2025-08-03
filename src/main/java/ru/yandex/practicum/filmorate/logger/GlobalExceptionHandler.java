@@ -25,15 +25,15 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult()
-          .getFieldErrors()
-          .forEach(error -> {
-              String fieldName = error.getField();
-              String errorMessage = error.getDefaultMessage();
-              errors.put(fieldName, errorMessage);
+                .getFieldErrors()
+                .forEach(error -> {
+                    String fieldName = error.getField();
+                    String errorMessage = error.getDefaultMessage();
+                    errors.put(fieldName, errorMessage);
 
-              log.error("Ошибка валидации поля '{}': {}", fieldName,
-                        errorMessage);
-          });
+                    log.error("Ошибка валидации поля '{}': {}", fieldName,
+                            errorMessage);
+                });
 
         return errors;
     }

@@ -29,19 +29,19 @@ public class EventDbStorage implements EventStorage {
     public Event addEvent(Event event) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(
                 jdbcTemplate).withTableName("events")
-                             .usingGeneratedKeyColumns("event_id");
+                .usingGeneratedKeyColumns("event_id");
 
         Map<String, Object> values = new HashMap<>();
         values.put("user_id", event.getUserId());
         values.put("entity_id", event.getEntityId());
         values.put("timestamp", event.getTimestamp());
         values.put("event_type", event.getEventType()
-                                      .name());
+                .name());
         values.put("operation", event.getOperation()
-                                     .name());
+                .name());
 
         Long eventId = simpleJdbcInsert.executeAndReturnKey(values)
-                                       .longValue();
+                .longValue();
         event.setEventId(eventId);
 
         return event;

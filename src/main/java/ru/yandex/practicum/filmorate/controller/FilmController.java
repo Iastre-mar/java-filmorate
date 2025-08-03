@@ -24,7 +24,7 @@ public class FilmController {
     @GetMapping("{id}")
     public Film getFilm(@PathVariable Long id) {
         return filmService.getFilmByIdOrThrow(id)
-                          .get();
+                .get();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.update(film)
-                          .get();
+                .get();
     }
 
     @PutMapping("{id}/like/{userId}")

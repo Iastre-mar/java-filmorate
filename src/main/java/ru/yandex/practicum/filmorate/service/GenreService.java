@@ -22,8 +22,8 @@ public class GenreService {
     @LogMethodResult
     public Genre getGenreOrThrow(Long id) {
         return genreStorage.get(id)
-                           .orElseThrow(() -> new GenreNotFoundException(
-                                   "Genre not found with id: " + id));
+                .orElseThrow(() -> new GenreNotFoundException(
+                        "Genre not found with id: " + id));
     }
 
     @LogMethodResult
