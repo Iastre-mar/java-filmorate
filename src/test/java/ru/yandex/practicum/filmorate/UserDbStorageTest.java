@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.storage.mapper.UserRowMapper;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -143,7 +144,7 @@ class UserDbStorageTest {
 
     @Test
     void getFriends_shouldReturnUserFriends() {
-        Set<User> friends = userDbStorage.getFriends(1L);
+        List<User> friends = userDbStorage.getFriends(1L);
 
         assertThat(friends).hasSize(2);
         assertThat(friends).extracting(User::getId)

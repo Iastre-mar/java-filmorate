@@ -21,7 +21,7 @@ public class RatingDbStorage implements RatingStorage {
     @Override
     public Optional<Rating> get(Long id) {
         String sql = "SELECT id, code FROM ref_rating WHERE id = ?";
-        Rating rating = null;
+        Rating rating;
         try {
             rating = jdbcTemplate.queryForObject(sql, ratingRowMapper, id);
 

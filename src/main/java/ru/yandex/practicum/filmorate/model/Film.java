@@ -36,5 +36,6 @@ public class Film {
     @JsonDeserialize(using = DurationDeserializer.class) @PositiveDuration
     private Duration duration;
     @JsonProperty("mpa") @Valid private Rating rating;
-    @Valid private List<Genre> genres;
+    @Valid private Set<Genre> genres;
+    private List<Director> directors;
 }

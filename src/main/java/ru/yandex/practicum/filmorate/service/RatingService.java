@@ -18,8 +18,8 @@ public class RatingService {
     @LogMethodResult
     public Rating getRatingOrThrow(Long id) {
         return ratingStorage.get(id)
-                            .orElseThrow(() -> new RatingNotFoundException(
-                                    "Rating not found with id: " + id));
+                .orElseThrow(() -> new RatingNotFoundException(
+                        "Rating not found with id: " + id));
     }
 
     @LogMethodResult

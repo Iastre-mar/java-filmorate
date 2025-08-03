@@ -3,16 +3,21 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final FilmService filmService;
 
     @GetMapping
     public Collection<User> getUsers() {
@@ -28,13 +33,13 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User user) {
         userService.getUser(user.getId());
         return userService.updateUser(user)
-                          .get();
+                .get();
     }
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
         return userService.getUser(id)
-                          .get();
+                .get();
     }
 
 
@@ -62,5 +67,20 @@ public class UserController {
         userService.removeFriend(id, friendId);
     }
 
+    @DeleteMapping("{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public Collection<Film> getRecommendations(@PathVariable Long id
+    ) {
+        return filmService.getRecommendations(id);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> getFeed(@PathVariable Long id) {
+        return userService.getEventsByUserId(id);
+    }
 
 }

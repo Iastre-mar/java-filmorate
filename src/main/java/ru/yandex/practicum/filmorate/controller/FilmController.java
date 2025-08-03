@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class FilmController {
     @GetMapping("{id}")
     public Film getFilm(@PathVariable Long id) {
         return filmService.getFilmByIdOrThrow(id)
-                          .get();
+                .get();
     }
 
     @PostMapping
@@ -34,7 +35,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.update(film)
-                          .get();
+                .get();
     }
 
     @PutMapping("{id}/like/{userId}")
@@ -49,15 +50,53 @@ public class FilmController {
         filmService.removeLikeFromFilm(id, userId);
     }
 
+    @DeleteMapping("{id}")
+    public void deleteFilm(@PathVariable Long id) {
+        filmService.deleteFilm(id);
+    }
+
     @GetMapping("/popular")
     public Collection<Film> getTopFilms(
-            @RequestParam(required = false) Long count
+            @RequestParam(required = false) Long count,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Integer year
     ) {
         if (count == null) {
             count = 10L;
         }
-        return filmService.getTopFilms(count);
+        if (genreId != null && year != null) {
+            return filmService.getTopFilmsByGenreAndYear(count, genreId, year);
+        } else if (genreId != null) {
+            return filmService.getTopFilms(count, genreId, null);
+        } else if (year != null) {
+            return filmService.getTopFilms(count, null, year);
+        } else {
+            return filmService.getTopFilms(count, null, null);
+        }
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getDirectorFilms(@PathVariable Long directorId,
+                                             @RequestParam String sortBy
+    ) {
+        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
+            sortBy = "year";
+        }
+        return filmService.getDirectorFilms(directorId, sortBy);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> getFilmsSearch(@RequestParam String query,
+                                           @RequestParam List<String> by
+    ) {
+        return filmService.getFilmsSearch(query, by);
     }
 
 
+    @GetMapping("/common")
+    public Collection<Film> getCommonLikedFilms(@RequestParam Long userId,
+                                                @RequestParam Long friendId
+    ) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }
