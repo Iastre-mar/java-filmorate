@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.logger.LogMethodResult;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
@@ -15,30 +17,44 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserService userService;
     private final FilmService filmService;
+    private final EventService eventService;
 
     @LogMethodResult
     public Review getReviewByIdOrThrow(Long id) {
         return reviewStorage.get(id)
-                            .get();
+                .orElseThrow(() -> new ReviewNotFoundException("Review not found with id: " + id));
     }
 
     @LogMethodResult
     public Review add(Review review) {
         review.setUseful(0L);
         checkExistenceOfFilmUser(review);
-        return reviewStorage.persist(review);
+        Review savedReview = reviewStorage.persist(review);
+
+        addReviewEvent(savedReview.getUserId(), savedReview.getReviewId(), Event.Operation.ADD);
+
+        return savedReview;
     }
 
     @LogMethodResult
     public Optional<Review> update(Review review) {
-        getReviewByIdOrThrow(review.getReviewId());
+        Review existingReview = getReviewByIdOrThrow(review.getReviewId());
         checkExistenceOfFilmUser(review);
-        return reviewStorage.update(review);
+        Optional<Review> updatedReview = reviewStorage.update(review);
+
+        if (updatedReview.isPresent()) {
+            addReviewEvent(existingReview.getUserId(), existingReview.getReviewId(), Event.Operation.UPDATE);
+        }
+
+        return updatedReview;
     }
 
     @LogMethodResult
     public void delete(Long id) {
-        getReviewByIdOrThrow(id);
+        Review review = getReviewByIdOrThrow(id);
+
+        addReviewEvent(review.getUserId(), review.getReviewId(), Event.Operation.REMOVE);
+
         reviewStorage.delete(id);
     }
 
@@ -81,7 +97,6 @@ public class ReviewService {
         return getReviewByIdOrThrow(reviewId);
     }
 
-
     private void checkExistenceOfFilmUser(Review review) {
         userService.getUser(review.getUserId());
         filmService.getFilmByIdOrThrow(review.getFilmId());
@@ -90,5 +105,15 @@ public class ReviewService {
     private void checkExistenceOfReviewUser(Long reviewId, Long userId) {
         getReviewByIdOrThrow(reviewId);
         userService.getUser(userId);
+    }
+
+    private void addReviewEvent(Long userId, Long reviewId, Event.Operation operation) {
+        Event event = new Event();
+        event.setUserId(userId);
+        event.setEntityId(reviewId);
+        event.setEventType(Event.EventType.REVIEW);
+        event.setOperation(operation);
+        event.setTimestamp(System.currentTimeMillis());
+        eventService.addEvent(event);
     }
 }
