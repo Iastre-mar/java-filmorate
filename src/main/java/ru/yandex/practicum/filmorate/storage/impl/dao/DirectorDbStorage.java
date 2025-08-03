@@ -43,7 +43,8 @@ public class DirectorDbStorage implements DirectorStorage {
         String sql = "SELECT id, name FROM ref_director WHERE name = ?";
         Director director;
         try {
-            director = jdbcTemplate.queryForObject(sql, directorRowMapper, name);
+            director = jdbcTemplate.queryForObject(sql, directorRowMapper,
+                                                   name);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -63,13 +64,13 @@ public class DirectorDbStorage implements DirectorStorage {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql,
-                    Statement.RETURN_GENERATED_KEYS);
+                                                               Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
 
         Long generatedId = Objects.requireNonNull(keyHolder.getKey())
-                .longValue();
+                                  .longValue();
         director.setId(generatedId);
         return director;
     }

@@ -69,3 +69,9 @@ Table film_likes {
     (film_id, user_id) [unique, name: 'uidx_film_user_like']
   }
 }
+
+Table review_likes {
+   id bigint [not null, ref: > reviews.id]
+   user_id bigint [not null, ref: > users.id]
+   is_like boolean [not null]
+}

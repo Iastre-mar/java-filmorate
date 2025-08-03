@@ -21,8 +21,8 @@ public class DirectorService {
     @LogMethodResult
     public Director getDirectorByIdOrThrow(Long id) {
         return directorStorage.get(id)
-                .orElseThrow(() -> new DirectorNotFoundException(
-                        "Director not found with id: " + id));
+                              .orElseThrow(() -> new DirectorNotFoundException(
+                                      "Director not found with id: " + id));
     }
 
     @LogMethodResult
@@ -34,8 +34,9 @@ public class DirectorService {
     protected List<Director> getDirectorOrThrow(List<Director> directors) {
         List<Director> resDirectors = getEmptyArrayIfNull(directors);
         resDirectors = resDirectors.stream()
-                .map(director -> getDirectorByIdOrThrow(director.getId()))
-                .toList();
+                                   .map(director -> getDirectorByIdOrThrow(
+                                           director.getId()))
+                                   .toList();
         return resDirectors;
     }
 
@@ -45,7 +46,8 @@ public class DirectorService {
 
     @LogMethodResult
     public Director add(Director director) {
-        Optional<Director> existingDirector = directorStorage.getByName(director.getName());
+        Optional<Director> existingDirector = directorStorage.getByName(
+                director.getName());
         return existingDirector.orElseGet(() -> directorStorage.add(director));
     }
 

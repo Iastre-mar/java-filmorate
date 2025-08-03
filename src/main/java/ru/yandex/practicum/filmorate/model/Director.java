@@ -6,8 +6,7 @@ import lombok.Data;
 @Data
 public class Director {
     private Long id;
-    @NotNull
-    private String name;
+    @NotNull private String name;
 
 
     public Director(Long id, String name) {

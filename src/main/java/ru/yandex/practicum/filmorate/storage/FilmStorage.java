@@ -15,7 +15,11 @@ public interface FilmStorage {
 
     Optional<Film> get(Long id);
 
-    Collection<Film> getTopFilms(Long count);
+    Collection<Film> getTopFilms(Long count, Long genreId, Integer year);
+
+    Collection<Film> getRecommendationsForUser(Long userId);
+
+    void loadLinkedDataForBatch(List<Film> films);
 
     Collection<Film> getDirectorFilms(Long directorId, String sortBy);
 
