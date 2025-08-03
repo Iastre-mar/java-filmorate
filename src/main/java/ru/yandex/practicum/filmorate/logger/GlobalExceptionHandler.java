@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.logger;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +63,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleRuntimeException(RuntimeException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(TypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleTypeMismatch(TypeMismatchException ex) {
         return Map.of("error", ex.getMessage());
     }
 }
