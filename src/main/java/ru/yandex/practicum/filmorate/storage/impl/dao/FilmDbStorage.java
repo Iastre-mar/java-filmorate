@@ -135,6 +135,40 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    @Override
+    public Collection<Film> getFilmsSearch(String query, List<String> by) {
+        String sql = "SELECT f.* " +
+                "FROM films f " +
+                "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                "WHERE f.name ILIKE ? " +
+                "GROUP BY f.id " +
+                "ORDER BY COUNT(fl.film_id) DESC;";
+        List<Film> films = new ArrayList<>();
+        if (!by.isEmpty()) {
+            for (String sortType : by) {
+                if (sortType.equals("director")) {
+                    sql = "SELECT f.* " +
+                            "FROM films f " +
+                            "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+                            "LEFT JOIN ref_director d ON fd.director_id = d.id " +
+                            "WHERE d.name ILIKE ? " +
+                            "GROUP BY f.id, d.id " +
+                            "ORDER BY f.name;";
+                } else if (sortType.equals("title")) {
+                    sql = "SELECT * " +
+                            "FROM films " +
+                            "WHERE name ILIKE ? " +
+                            "ORDER BY name;";
+                }
+                films.addAll(jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%"));
+            }
+        } else {
+            films.addAll(jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%"));
+        }
+        loadLinkedDataForBatch(films);
+        return films;
+    }
+
     private void loadLinkedDataForBatch(List<Film> films) {
 
         Map<Long, Film> filmMap = films.stream()
