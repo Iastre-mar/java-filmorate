@@ -14,5 +14,5 @@ public interface FilmStorage {
 
     Optional<Film> get(Long id);
 
-    Collection<Film> getTopFilms(Long count);
+    Collection<Film> getTopFilms(Long count, Long genreId, Integer year);
 }

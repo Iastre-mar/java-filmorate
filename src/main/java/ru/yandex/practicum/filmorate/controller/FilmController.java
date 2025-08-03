@@ -23,7 +23,7 @@ public class FilmController {
     @GetMapping("{id}")
     public Film getFilm(@PathVariable Long id) {
         return filmService.getFilmByIdOrThrow(id)
-                          .get();
+                .get();
     }
 
     @PostMapping
@@ -34,7 +34,7 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.update(film)
-                          .get();
+                .get();
     }
 
     @PutMapping("{id}/like/{userId}")
@@ -51,13 +51,20 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getTopFilms(
-            @RequestParam(required = false) Long count
-    ) {
+            @RequestParam(required = false) Long count,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Integer year) {
         if (count == null) {
             count = 10L;
         }
-        return filmService.getTopFilms(count);
+        if (genreId != null && year != null) {
+            return filmService.getTopFilmsByGenreAndYear(count, genreId, year);
+        } else if (genreId != null) {
+            return filmService.getTopFilms(count, genreId, null);
+        } else if (year != null) {
+            return filmService.getTopFilms(count, null, year);
+        } else {
+            return filmService.getTopFilms(count, null, null);
+        }
     }
-
-
 }
