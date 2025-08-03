@@ -39,10 +39,24 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getTopFilms(Long count) {
-        return films.values().stream()
-                .sorted((f1, f2) -> Long.compare(f2.getSetUserIdsLikedThis().size(), f1.getSetUserIdsLikedThis().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return films.values()
+                    .stream()
+                    .sorted((f1, f2) -> Long.compare(
+                            f2.getSetUserIdsLikedThis()
+                              .size(), f1.getSetUserIdsLikedThis()
+                                         .size()))
+                    .limit(count)
+                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public void loadLinkedDataForBatch(List<Film> films) {
+
+    }
+
+    @Override
+    public void saveLinkedFilmData(Film film) {
+
     }
 
     @Override
@@ -51,19 +65,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Collections.emptyList();
     }
 
-    @Override
     public Map<Long, Set<Long>> loadLikesForFilms(Set<Long> filmIds) {
         // Implement the logic to load likes for films
         return Collections.emptyMap();
     }
 
-    @Override
     public Map<Long, List<Genre>> loadGenresForFilms(Set<Long> filmIds) {
         // Implement the logic to load genres for films
         return Collections.emptyMap();
     }
 
-    @Override
     public Map<Long, Rating> loadRatingsByIds(Set<Long> ratingIds) {
         return ratingIds.stream()
                         .collect(Collectors.toMap(id -> id, ratings::get));
