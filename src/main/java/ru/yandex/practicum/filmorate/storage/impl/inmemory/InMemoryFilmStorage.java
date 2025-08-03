@@ -88,6 +88,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(id); // Удаление фильма из внутреннего хранилища
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(Long firstUser, Long secondUser) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteLinkedFilmData(Film film) {
+
+    }
+
     private long generateId() {
         return id++;
     }

@@ -91,7 +91,6 @@ public class FilmDbStorage implements FilmStorage {
                             film.getDuration()
                                 .toMinutes(), film.getRating()
                                                   .getId(), film.getId());
-
         deleteLinkedFilmData(film);
         saveLinkedFilmData(film);
         return Optional.of(film);
@@ -220,6 +219,26 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(deleteFilmSql, id);
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(Long userId, Long otherUserId) {
+        String sql = "SELECT f.*, COUNT(fl.user_id) AS likes_count " +
+                     "FROM films f " +
+                     "JOIN film_likes fl ON f.id = fl.film_id " +
+                     "WHERE EXISTS ( " +
+                     "SELECT 1 FROM film_likes WHERE film_id = f.id AND user_id = ? " +
+                     ") " +
+                     "AND EXISTS ( " +
+                     "SELECT 1 FROM film_likes WHERE film_id = f.id AND user_id = ? " +
+                     ") " +
+                     "GROUP BY f.id " +
+                     "ORDER BY likes_count DESC";
+
+        List<Film> commonFilms = jdbcTemplate.query(sql, filmRowMapper, userId,
+                                                    otherUserId);
+        loadLinkedDataForBatch(commonFilms);
+
+        return commonFilms;
+    }
 
     @Override
     public Collection<Film> getFilmsSearch(String query, List<String> by) {
@@ -336,13 +355,15 @@ public class FilmDbStorage implements FilmStorage {
                                                 Function.identity()));
     }
 
+    @Override
     public void saveLinkedFilmData(Film film) {
         saveLikes(film);
         saveFilmGenres(film);
         saveFilmDirectors(film);
     }
 
-    private void deleteLinkedFilmData(Film film) {
+    @Override
+    public void deleteLinkedFilmData(Film film) {
         deleteGenres(film);
         deleteLikes(film);
         deleteFilmDirectors(film);
