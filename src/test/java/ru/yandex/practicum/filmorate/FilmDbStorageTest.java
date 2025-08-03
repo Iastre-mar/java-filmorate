@@ -91,7 +91,7 @@ class FilmDbStorageTest {
         rating.setId(4L); // R rating
         newFilm.setRating(rating);
 
-        newFilm.setGenres(List.of(new Genre(1L, "Комедия"),
+        newFilm.setGenres(Set.of(new Genre(1L, "Комедия"),
                                   new Genre(3L, "Мультфильм")));
         newFilm.setSetUserIdsLikedThis(Set.of(103L, 104L));
 
@@ -123,7 +123,7 @@ class FilmDbStorageTest {
         Rating newRating = new Rating();
         newRating.setId(4L); // R rating
         film.setRating(newRating);
-        film.setGenres(List.of(new Genre(1L, "Комедия"),
+        film.setGenres(Set.of(new Genre(1L, "Комедия"),
                                new Genre(3L, "Мультфильм")));
 
         film.setSetUserIdsLikedThis(Set.of(101L, 103L));
@@ -197,7 +197,7 @@ class FilmDbStorageTest {
         newFilm.setRating(rating);
 
         newFilm.setGenres(
-                List.of(new Genre(1L, "Комедия"), new Genre(1L, "Комедия"),
+                Set.of(new Genre(1L, "Комедия"), new Genre(1L, "Комедия"),
                         new Genre(2L, "Драма")));
 
         Film savedFilm = filmDbStorage.persist(newFilm);
