@@ -72,6 +72,12 @@ public class FilmService {
     }
 
     @LogMethodResult
+    public Collection<Film> getRecommendations(Long userId) {
+        userService.getUser(userId);
+        return filmStorage.getRecommendationsForUser(userId);
+    }
+
+    @LogMethodResult
     public Collection<Film> getTopFilmsByGenreAndYear(Long count, Long genreId, Integer year) {
         return filmStorage.getTopFilms(count, genreId, year);
     }

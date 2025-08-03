@@ -86,8 +86,9 @@ public class FilmDbStorage implements FilmStorage {
                 "duration = ?, rating_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(),
                             Date.valueOf(film.getReleaseDate()),
-                            film.getDuration(), film.getRating()
-                                                    .getId(), film.getId());
+                            film.getDuration()
+                                .toMinutes(), film.getRating()
+                                                  .getId(), film.getId());
 
         deleteLinkedFilmData(film);
         saveLinkedFilmData(film);
@@ -117,7 +118,38 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-    private void loadLinkedDataForBatch(List<Film> films) {
+    @Override
+    public Collection<Film> getRecommendationsForUser(Long userId) {
+        String sql = "WITH similar_users AS ( " +
+                     "SELECT " +
+                     "fl2.user_id AS similar_user_id, " +
+                     "COUNT(DISTINCT fl2.film_id) AS common_films " +
+                     "FROM film_likes fl1 " +
+                     "JOIN film_likes fl2 ON fl1.film_id = fl2.film_id AND fl2.user_id != ? " +
+                     "WHERE fl1.user_id = ? " +
+                     "GROUP BY fl2.user_id " +
+                     "ORDER BY common_films DESC, similar_user_id " +
+                     "LIMIT 1 " +
+                     ") " +
+                     "SELECT f.* " +
+                     "FROM film_likes fl " +
+                     "JOIN films f ON fl.film_id = f.id " +
+                     "WHERE fl.user_id = (SELECT similar_user_id FROM similar_users) " +
+                     "AND fl.film_id NOT IN ( " +
+                     "SELECT film_id FROM film_likes WHERE user_id = ? " +
+                     ")";
+
+        List<Film> recommendedFilms = jdbcTemplate.query(sql, filmRowMapper,
+                                                         userId, userId,
+                                                         userId);
+
+        loadLinkedDataForBatch(recommendedFilms);
+
+        return recommendedFilms;
+    }
+
+    @Override
+    public void loadLinkedDataForBatch(List<Film> films) {
 
         Map<Long, Film> filmMap = films.stream()
                                        .collect(Collectors.toMap(Film::getId,

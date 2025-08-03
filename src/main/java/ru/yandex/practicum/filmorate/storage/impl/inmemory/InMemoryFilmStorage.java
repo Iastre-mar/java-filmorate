@@ -4,10 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -54,6 +51,16 @@ public class InMemoryFilmStorage implements FilmStorage {
                         f1.getSetUserIdsLikedThis().size()))
                 .limit(count != null ? count : 10)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Film> getRecommendationsForUser(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    public void loadLinkedDataForBatch(List<Film> films) {
+
     }
 
     private long generateId() {
