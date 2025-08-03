@@ -94,9 +94,9 @@ public class FilmController {
 
 
     @GetMapping("/common")
-    public Collection<Film> getCommonLikedFilms(
-            @RequestParam Long userId,
-            @RequestParam Long friendId) {
+    public Collection<Film> getCommonLikedFilms(@RequestParam Long userId,
+                                                @RequestParam Long friendId
+    ) {
         return filmService.getCommonFilms(userId, friendId);
     }
 }

@@ -139,7 +139,6 @@ public class FilmService {
     }
 
 
-
     private void addLikeEvent(Long userId,
                               Long filmId,
                               Event.Operation operation

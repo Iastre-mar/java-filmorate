@@ -221,29 +221,24 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getCommonFilms(Long userId, Long otherUserId) {
-            String sql =
-                    "SELECT f.*, COUNT(fl.user_id) AS likes_count " +
-                    "FROM films f " +
-                    "JOIN film_likes fl ON f.id = fl.film_id " +
-                    "WHERE EXISTS ( " +
-                    "SELECT 1 FROM film_likes WHERE film_id = f.id AND user_id = ? " +
-                    ") " +
-                    "AND EXISTS ( " +
-                    "SELECT 1 FROM film_likes WHERE film_id = f.id AND user_id = ? " +
-                    ") " +
-                    "GROUP BY f.id " +
-                    "ORDER BY likes_count DESC";
+        String sql = "SELECT f.*, COUNT(fl.user_id) AS likes_count " +
+                     "FROM films f " +
+                     "JOIN film_likes fl ON f.id = fl.film_id " +
+                     "WHERE EXISTS ( " +
+                     "SELECT 1 FROM film_likes WHERE film_id = f.id AND user_id = ? " +
+                     ") " +
+                     "AND EXISTS ( " +
+                     "SELECT 1 FROM film_likes WHERE film_id = f.id AND user_id = ? " +
+                     ") " +
+                     "GROUP BY f.id " +
+                     "ORDER BY likes_count DESC";
 
-            List<Film> commonFilms = jdbcTemplate.query(
-                    sql,
-                    filmRowMapper,
-                    userId,
-                    otherUserId
-            );
-            loadLinkedDataForBatch(commonFilms);
+        List<Film> commonFilms = jdbcTemplate.query(sql, filmRowMapper, userId,
+                                                    otherUserId);
+        loadLinkedDataForBatch(commonFilms);
 
-            return commonFilms;
-        }
+        return commonFilms;
+    }
 
     @Override
     public Collection<Film> getFilmsSearch(String query, List<String> by) {
