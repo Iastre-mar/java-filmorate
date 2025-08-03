@@ -113,8 +113,11 @@ public class FilmService {
 
     @LogMethodResult
     public void deleteFilm(Long id) {
-        if (!filmStorage.get(id).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Фильм с ID %d не найден".formatted(id));
+        if (!filmStorage.get(id)
+                        .isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                              "Фильм с ID %d не найден".formatted(
+                                                      id));
         }
         filmStorage.delete(id);
     }

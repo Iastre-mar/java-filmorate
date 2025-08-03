@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exceptions.FilmorateNotFoundException;
 
 import java.util.HashMap;
@@ -23,15 +25,15 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult()
-                .getFieldErrors()
-                .forEach(error -> {
-                    String fieldName = error.getField();
-                    String errorMessage = error.getDefaultMessage();
-                    errors.put(fieldName, errorMessage);
+          .getFieldErrors()
+          .forEach(error -> {
+              String fieldName = error.getField();
+              String errorMessage = error.getDefaultMessage();
+              errors.put(fieldName, errorMessage);
 
-                    log.error("Ошибка валидации поля '{}': {}", fieldName,
-                            errorMessage);
-                });
+              log.error("Ошибка валидации поля '{}': {}", fieldName,
+                        errorMessage);
+          });
 
         return errors;
     }
@@ -50,13 +52,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FilmorateNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleFilmorateNotFound(FilmorateNotFoundException ex) {
+    public Map<String, String> handleFilmorateNotFound(
+            FilmorateNotFoundException ex
+    ) {
         return Map.of("error", ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public Map<String, String> handleIllegalArgumentException(
+            IllegalArgumentException ex
+    ) {
         return Map.of("error", ex.getMessage());
     }
 

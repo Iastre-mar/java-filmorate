@@ -43,8 +43,8 @@ public class InMemoryFilmStorage implements FilmStorage {
                                         Integer year
     ) {
         return films.values()
-                .stream()
-                .filter(f -> genreId == null ||
+                    .stream()
+                    .filter(f -> genreId == null ||
                                  f.getGenres()
                                   .stream()
                                   .anyMatch(g -> g.getId()
@@ -54,10 +54,10 @@ public class InMemoryFilmStorage implements FilmStorage {
                                   .getYear() == year)
                     .sorted((f1, f2) -> Integer.compare(
                             f2.getSetUserIdsLikedThis()
-                        .size() , f1.getSetUserIdsLikedThis()
-                                .size()))
-                .limit(count != null ? count : 10)
-                .collect(Collectors.toList());
+                              .size(), f1.getSetUserIdsLikedThis()
+                                         .size()))
+                    .limit(count != null ? count : 10)
+                    .collect(Collectors.toList());
     }
 
     @Override

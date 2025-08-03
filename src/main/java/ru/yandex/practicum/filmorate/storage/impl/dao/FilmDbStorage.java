@@ -212,7 +212,8 @@ public class FilmDbStorage implements FilmStorage {
     public void delete(Long id) {
         // Проверка существования фильма
         if (!get(id).isPresent()) {
-            throw new FilmNotFoundException("Фильм с ID %d не найден".formatted(id));
+            throw new FilmNotFoundException(
+                    "Фильм с ID %d не найден".formatted(id));
         }
 
         String deleteFilmSql = "DELETE FROM films WHERE id = ?";
