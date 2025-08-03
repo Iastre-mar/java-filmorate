@@ -86,7 +86,7 @@ public class FilmDbStorage implements FilmStorage {
                         "duration = ?, rating_id = ? WHERE id = ?";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
-                film.getDuration(), film.getRating()
+                film.getDuration().toMinutes(), film.getRating()
                         .getId(), film.getId());
 
         deleteLinkedFilmData(film);
