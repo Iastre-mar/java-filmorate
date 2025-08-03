@@ -21,6 +21,7 @@ public class FilmService {
     private final RatingService ratingService;
     private final GenreService genreService;
     private final EventService eventService;
+    private final DirectorService directorService;
 
     @LogMethodResult
     public Collection<Film> getAll() {
@@ -31,12 +32,14 @@ public class FilmService {
     @LogMethodResult
     public Film add(Film film) {
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
+        film.setDirectors(
+                directorService.getDirectorOrThrow(film.getDirectors()));
         ratingService.getRatingOrThrow(film.getRating()
-                .getId());
+                                           .getId());
         filmStorage.persist(film);
 
         Rating fullRating = ratingService.getRatingOrThrow(film.getRating()
-                .getId());
+                                                               .getId());
         film.setRating(fullRating);
         return film;
     }
@@ -45,6 +48,8 @@ public class FilmService {
     public Optional<Film> update(Film film) {
         getFilmByIdOrThrow(film.getId());
         film.setGenres(genreService.getGenreOrThrow(film.getGenres()));
+        film.setDirectors(
+                directorService.getDirectorOrThrow(film.getDirectors()));
         return filmStorage.update(film);
     }
 
@@ -52,12 +57,12 @@ public class FilmService {
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                .get();
+                               .get();
 
         film.getSetUserIdsLikedThis()
-                .add(user.getId());
+            .add(user.getId());
 
-        update(film);
+        filmStorage.saveLinkedFilmData(film);
 
         addLikeEvent(userId, filmId, Event.Operation.ADD);
     }
@@ -66,11 +71,11 @@ public class FilmService {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                .get();
+                               .get();
         film.getSetUserIdsLikedThis()
-                .remove(user.getId());
+            .remove(user.getId());
 
-        update(film);
+        filmStorage.saveLinkedFilmData(film);
 
         addLikeEvent(userId, filmId, Event.Operation.REMOVE);
     }
@@ -101,6 +106,11 @@ public class FilmService {
     public Optional<Film> getFilmByIdOrThrow(Long id) {
 
         return filmStorage.get(id);
+    }
+
+    @LogMethodResult
+    public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
+        return filmStorage.getDirectorFilms(directorId, sortBy);
     }
 
     private void addLikeEvent(Long userId,

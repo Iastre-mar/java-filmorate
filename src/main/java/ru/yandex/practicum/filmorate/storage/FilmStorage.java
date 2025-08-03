@@ -20,4 +20,8 @@ public interface FilmStorage {
     Collection<Film> getRecommendationsForUser(Long userId);
 
     void loadLinkedDataForBatch(List<Film> films);
+
+    Collection<Film> getDirectorFilms(Long directorId, String sortBy);
+
+    void saveLinkedFilmData(Film film);
 }

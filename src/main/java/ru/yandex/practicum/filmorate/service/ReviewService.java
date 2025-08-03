@@ -22,7 +22,8 @@ public class ReviewService {
     @LogMethodResult
     public Review getReviewByIdOrThrow(Long id) {
         return reviewStorage.get(id)
-                .orElseThrow(() -> new ReviewNotFoundException("Review not found with id: " + id));
+                            .orElseThrow(() -> new ReviewNotFoundException(
+                                    "Review not found with id: " + id));
     }
 
     @LogMethodResult
@@ -31,7 +32,8 @@ public class ReviewService {
         checkExistenceOfFilmUser(review);
         Review savedReview = reviewStorage.persist(review);
 
-        addReviewEvent(savedReview.getUserId(), savedReview.getReviewId(), Event.Operation.ADD);
+        addReviewEvent(savedReview.getUserId(), savedReview.getReviewId(),
+                       Event.Operation.ADD);
 
         return savedReview;
     }
@@ -43,7 +45,9 @@ public class ReviewService {
         Optional<Review> updatedReview = reviewStorage.update(review);
 
         if (updatedReview.isPresent()) {
-            addReviewEvent(existingReview.getUserId(), existingReview.getReviewId(), Event.Operation.UPDATE);
+            addReviewEvent(existingReview.getUserId(),
+                           existingReview.getReviewId(),
+                           Event.Operation.UPDATE);
         }
 
         return updatedReview;
@@ -53,7 +57,8 @@ public class ReviewService {
     public void delete(Long id) {
         Review review = getReviewByIdOrThrow(id);
 
-        addReviewEvent(review.getUserId(), review.getReviewId(), Event.Operation.REMOVE);
+        addReviewEvent(review.getUserId(), review.getReviewId(),
+                       Event.Operation.REMOVE);
 
         reviewStorage.delete(id);
     }
@@ -107,7 +112,10 @@ public class ReviewService {
         userService.getUser(userId);
     }
 
-    private void addReviewEvent(Long userId, Long reviewId, Event.Operation operation) {
+    private void addReviewEvent(Long userId,
+                                Long reviewId,
+                                Event.Operation operation
+    ) {
         Event event = new Event();
         event.setUserId(userId);
         event.setEntityId(reviewId);
