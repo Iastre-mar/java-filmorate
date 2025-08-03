@@ -35,11 +35,11 @@ public class FilmService {
         film.setDirectors(
                 directorService.getDirectorOrThrow(film.getDirectors()));
         ratingService.getRatingOrThrow(film.getRating()
-                .getId());
+                                           .getId());
         filmStorage.persist(film);
 
         Rating fullRating = ratingService.getRatingOrThrow(film.getRating()
-                .getId());
+                                                               .getId());
         film.setRating(fullRating);
         return film;
     }
@@ -57,10 +57,10 @@ public class FilmService {
     public void addLikeToFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                .get();
+                               .get();
 
         film.getSetUserIdsLikedThis()
-                .add(user.getId());
+            .add(user.getId());
 
         filmStorage.saveLinkedFilmData(film);
 
@@ -71,9 +71,9 @@ public class FilmService {
     public void removeLikeFromFilm(Long filmId, Long userId) {
         Film film = getFilmByIdOrThrow(filmId).get();
         User user = userService.getUser(userId)
-                .get();
+                               .get();
         film.getSetUserIdsLikedThis()
-                .remove(user.getId());
+            .remove(user.getId());
 
         filmStorage.saveLinkedFilmData(film);
 
@@ -112,6 +112,7 @@ public class FilmService {
     public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
         return filmStorage.getDirectorFilms(directorId, sortBy);
     }
+
     private void addLikeEvent(Long userId,
                               Long filmId,
                               Event.Operation operation
