@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -51,47 +50,18 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getTopFilms(
-            @RequestParam(required = false) Long count,
-            @RequestParam(required = false) Long genreId,
-            @RequestParam(required = false) Integer year
-    ) {
+    public Collection<Film> getTopFilms(@RequestParam(required = false) Long count) {
         if (count == null) {
             count = 10L;
         }
-        if (genreId != null && year != null) {
-            return filmService.getTopFilmsByGenreAndYear(count, genreId, year);
-        } else if (genreId != null) {
-            return filmService.getTopFilms(count, genreId, null);
-        } else if (year != null) {
-            return filmService.getTopFilms(count, null, year);
-        } else {
-            return filmService.getTopFilms(count, null, null);
-        }
+        return filmService.getTopFilms(count);
     }
 
     @GetMapping("/common")
-    public Collection<Film> getCommonFilms(@RequestParam Long userId,
-                                           @RequestParam Long friendId
-    ) {
+    public Collection<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 
 
-    @GetMapping("/director/{directorId}")
-    public Collection<Film> getDirectorFilms(@PathVariable Long directorId,
-                                             @RequestParam String sortBy
-    ) {
-        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
-            sortBy = "year";
-        }
-        return filmService.getDirectorFilms(directorId, sortBy);
-    }
 
-    @GetMapping("/search")
-    public Collection<Film> getFilmsSearch(@RequestParam String query,
-                                           @RequestParam List<String> by
-    ) {
-        return filmService.getFilmsSearch(query, by);
-    }
 }

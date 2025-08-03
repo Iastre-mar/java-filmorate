@@ -37,5 +37,4 @@ public class Film {
     private Duration duration;
     @JsonProperty("mpa") @Valid private Rating rating;
     @Valid private List<Genre> genres;
-    private List<Director> directors;
 }
