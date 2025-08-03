@@ -14,11 +14,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAll() {
+
         return films.values();
     }
 
     @Override
     public Optional<Film> get(Long id) {
+
         return Optional.ofNullable(films.get(id));
     }
 
@@ -38,11 +40,49 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getTopFilms(Long count) {
-        return films.values().stream()
-                .sorted((f1, f2) -> Long.compare(f2.getSetUserIdsLikedThis().size(), f1.getSetUserIdsLikedThis().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public Collection<Film> getTopFilms(Long count,
+                                        Long genreId,
+                                        Integer year
+    ) {
+        return films.values()
+                    .stream()
+                    .filter(f -> genreId == null ||
+                                 f.getGenres()
+                                  .stream()
+                                  .anyMatch(g -> g.getId()
+                                                  .equals(genreId)))
+                    .filter(f -> year == null ||
+                                 f.getReleaseDate()
+                                  .getYear() == year)
+                    .sorted((f1, f2) -> Integer.compare(
+                            f2.getSetUserIdsLikedThis()
+                              .size(), f1.getSetUserIdsLikedThis()
+                                         .size()))
+                    .limit(count != null ? count : 10)
+                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Film> getRecommendationsForUser(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    public void loadLinkedDataForBatch(List<Film> films) {
+
+    }
+
+    @Override
+    public Collection<Film> getDirectorFilms(Long directorId, String sortBy) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<Film> getFilmsSearch(String query, List<String> by) {
+        return Collections.emptyList();
+    }
+
+    public void saveLinkedFilmData(Film film) {
     }
 
     @Override
