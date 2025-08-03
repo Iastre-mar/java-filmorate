@@ -234,10 +234,12 @@ public class FilmDbStorage implements FilmStorage {
                           "WHERE name ILIKE ? " +
                           "ORDER BY name;";
                 }
-                films.addAll(jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%"));
+                films.addAll(jdbcTemplate.query(sql, filmRowMapper,
+                                                "%" + query + "%"));
             }
         } else {
-            films.addAll(jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%"));
+            films.addAll(
+                    jdbcTemplate.query(sql, filmRowMapper, "%" + query + "%"));
         }
         loadLinkedDataForBatch(films);
         return films;
