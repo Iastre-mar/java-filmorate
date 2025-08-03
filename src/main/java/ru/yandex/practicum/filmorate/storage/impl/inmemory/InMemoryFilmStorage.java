@@ -12,7 +12,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
     private long id = 1;
 
-
     @Override
     public Collection<Film> getAll() {
 
@@ -37,7 +36,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Optional.ofNullable(
                 films.computeIfPresent(film.getId(), (k, v) -> film));
     }
-
 
     @Override
     public Collection<Film> getTopFilms(Long count,
@@ -85,9 +83,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void saveLinkedFilmData(Film film) {
     }
 
+    @Override
+    public void delete(Long id) {
+        films.remove(id); // Удаление фильма из внутреннего хранилища
+    }
+
     private long generateId() {
         return id++;
     }
 }
-
-

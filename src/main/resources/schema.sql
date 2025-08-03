@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS events
     event_type VARCHAR NOT NULL,
     operation  VARCHAR NOT NULL,
     entity_id  BIGINT  NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 

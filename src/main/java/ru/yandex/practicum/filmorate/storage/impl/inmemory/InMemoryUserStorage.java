@@ -40,6 +40,11 @@ public class InMemoryUserStorage implements UserStorage {
                 users.computeIfPresent(user.getId(), (k, v) -> user));
     }
 
+    @Override
+    public void delete(Long id) {
+        users.remove(id); // Удаление пользователя из внутреннего хранилища
+    }
+
     private long generateId() {
         return id++;
     }

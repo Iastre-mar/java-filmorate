@@ -38,14 +38,30 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
-    @ExceptionHandler({
-            NoSuchElementException.class,
-            NullPointerException.class,
-            FilmorateNotFoundException.class
-
-    })
+    @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNoSuchElementException(RuntimeException ex
+    public Map<String, String> handleNoSuchElement(NoSuchElementException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNullPointer(NullPointerException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(FilmorateNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleFilmorateNotFound(
+            FilmorateNotFoundException ex
+    ) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgumentException(
+            IllegalArgumentException ex
     ) {
         return Map.of("error", ex.getMessage());
     }

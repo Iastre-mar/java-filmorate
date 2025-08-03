@@ -208,6 +208,18 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public void delete(Long id) {
+        // Проверка существования фильма
+        if (!get(id).isPresent()) {
+            throw new FilmNotFoundException(
+                    "Фильм с ID %d не найден".formatted(id));
+        }
+
+        String deleteFilmSql = "DELETE FROM films WHERE id = ?";
+        jdbcTemplate.update(deleteFilmSql, id);
+    }
+
 
     @Override
     public Collection<Film> getFilmsSearch(String query, List<String> by) {

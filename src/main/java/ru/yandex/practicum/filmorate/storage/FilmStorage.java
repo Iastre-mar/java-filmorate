@@ -26,4 +26,6 @@ public interface FilmStorage {
     Collection<Film> getFilmsSearch(String query, List<String> by);
 
     void saveLinkedFilmData(Film film);
+
+    void delete(Long id);
 }
