@@ -78,6 +78,7 @@ public class FilmService {
         film.getSetUserIdsLikedThis()
             .remove(user.getId());
 
+        filmStorage.deleteLinkedFilmData(film);
         filmStorage.saveLinkedFilmData(film);
 
         addLikeEvent(userId, filmId, Event.Operation.REMOVE);
@@ -132,6 +133,12 @@ public class FilmService {
     public Collection<Film> getFilmsSearch(String query, List<String> by) {
         return filmStorage.getFilmsSearch(query, by);
     }
+
+    public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+
 
     private void addLikeEvent(Long userId,
                               Long filmId,

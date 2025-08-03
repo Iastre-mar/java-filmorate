@@ -28,4 +28,8 @@ public interface FilmStorage {
     void saveLinkedFilmData(Film film);
 
     void delete(Long id);
+
+    Collection<Film> getCommonFilms(Long firstUser, Long secondUser);
+
+    void deleteLinkedFilmData(Film film);
 }
