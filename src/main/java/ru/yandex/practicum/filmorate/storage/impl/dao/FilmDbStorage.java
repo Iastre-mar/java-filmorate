@@ -98,17 +98,55 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getTopFilms(Long count) {
+    public Collection<Film> getTopFilms(Long count,
+                                        Long genreId,
+                                        Integer year
+    ) {
         String sql = "SELECT f.*, COUNT(fl.user_id) AS likes_count " +
                      "FROM films f " +
                      "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                     "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                     "WHERE (?1 IS NULL OR fg.genre_id = ?1) " +
+                     "AND (?2 IS NULL OR YEAR(f.release_date) = ?2) " +
                      "GROUP BY f.id " +
                      "ORDER BY likes_count DESC " +
-                     "LIMIT ?";
+                     "LIMIT ?3";
 
-        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, count);
+        List<Film> films = jdbcTemplate.query(sql, filmRowMapper, genreId,
+                                              year,
+                                              count != null ? count : 10);
         loadLinkedDataForBatch(films);
         return films;
+    }
+
+    @Override
+    public Collection<Film> getRecommendationsForUser(Long userId) {
+        String sql = "WITH similar_users AS ( " +
+                     "SELECT " +
+                     "fl2.user_id AS similar_user_id, " +
+                     "COUNT(DISTINCT fl2.film_id) AS common_films " +
+                     "FROM film_likes fl1 " +
+                     "JOIN film_likes fl2 ON fl1.film_id = fl2.film_id AND fl2.user_id != ? " +
+                     "WHERE fl1.user_id = ? " +
+                     "GROUP BY fl2.user_id " +
+                     "ORDER BY common_films DESC, similar_user_id " +
+                     "LIMIT 1 " +
+                     ") " +
+                     "SELECT f.* " +
+                     "FROM film_likes fl " +
+                     "JOIN films f ON fl.film_id = f.id " +
+                     "WHERE fl.user_id = (SELECT similar_user_id FROM similar_users) " +
+                     "AND fl.film_id NOT IN ( " +
+                     "SELECT film_id FROM film_likes WHERE user_id = ? " +
+                     ")";
+
+        List<Film> recommendedFilms = jdbcTemplate.query(sql, filmRowMapper,
+                                                         userId, userId,
+                                                         userId);
+
+        loadLinkedDataForBatch(recommendedFilms);
+
+        return recommendedFilms;
     }
 
     @Override
@@ -135,7 +173,8 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-    private void loadLinkedDataForBatch(List<Film> films) {
+    @Override
+    public void loadLinkedDataForBatch(List<Film> films) {
 
         Map<Long, Film> filmMap = films.stream()
                                        .collect(Collectors.toMap(Film::getId,
@@ -294,8 +333,7 @@ public class FilmDbStorage implements FilmStorage {
 
         List<Object[]> batchArgs = uniqueGenreIds.stream()
                                                  .map(genreId -> new Object[]{
-                                                         film.getId(),
-                                                         genreId
+                                                         film.getId(), genreId
                                                  })
                                                  .collect(Collectors.toList());
 
